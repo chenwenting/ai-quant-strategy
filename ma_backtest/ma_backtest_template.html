@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双均线交叉策略回测工具</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+:root {
+  --color-up:     #e74c3c;
+  --color-down:   #27ae60;
+  --color-ma-short: #3498db;
+  --color-ma-long:  #f39c12;
+  --accent:        #4361ee;
+  --accent-hover:  #3a56d4;
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f8f9fa;
+  --bg-sidebar:    #f0f2f5;
+  --text-primary:  #1a1a2e;
+  --text-secondary:#6c757d;
+  --border-color:  #dee2e6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", "SimHei", sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== Top Nav ===== */
+.top-nav {
+  height: 56px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 100;
+  flex-shrink: 0;
+}
+.top-nav .logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+}
+.top-nav .logo span { color: var(--accent); }
+.top-nav .subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255,255,255,0.2);
+}
+.top-nav .stock-info {
+  margin-left: auto;
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.top-nav .btn-nav {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.top-nav .btn-nav:hover { background: rgba(255,255,255,0.22); }
+
+/* ===== Main Layout ===== */
+.main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 300px;
+  min-width: 300px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+.sidebar-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 12px 16px 8px;
+}
+
+/* ===== Stock Selector ===== */
+.stock-select {
+  margin: 0 16px 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 13px;
+  width: calc(100% - 32px);
+  background: #fff;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* ===== Slider Row ===== */
+.slider-row {
+  margin: 0 16px 12px;
+}
+.slider-row label {
+  font-size: 13px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.slider-row label .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; margin-right: 6px;
+}
+
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-track-wrap {
+  position: relative;
+  flex: 1;
+  height: 6px;
+}
+.slider-track-wrap input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+.slider-track-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--color-ma-short);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+  position: relative;
+  z-index: 3;
+}
+.slider-track-wrap input[type="range"].long-range::-webkit-slider-thumb {
+  border-color: var(--color-ma-long);
+}
+
+.slider-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 6px;
+  border-radius: 3px 0 0 3px;
+  pointer-events: none;
+  z-index: 1;
+  transition: width 0.1s ease;
+}
+.slider-fill.short { background: var(--color-ma-short); }
+.slider-fill.long { background: var(--color-ma-long); }
+
+.slider-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+  padding-left: 4px;
+}
+
+/* ===== Preset Buttons ===== */
+.preset-btns {
+  display: flex;
+  gap: 6px;
+  margin: 0 16px 12px;
+  flex-wrap: wrap;
+}
+.preset-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+.preset-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ===== Fee Toggle ===== */
+.fee-row {
+  margin: 0 16px 12px;
+}
+.fee-toggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.fee-toggle label {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  user-select: none;
+}
+.fee-toggle input[type="radio"] { display: none; }
+.fee-toggle input[type="radio"]:checked + label {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 500;
+}
+.fee-toggle label:not(:last-child) {
+  border-right: 1px solid var(--border-color);
+}
+
+/* ===== Capital Input ===== */
+.capital-row {
+  margin: 0 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.capital-row label { font-size: 13px; color: var(--text-primary); flex-shrink: 0; }
+.capital-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: right;
+}
+
+/* ===== Run Button ===== */
+.run-btn {
+  margin: 0 16px 12px;
+  width: calc(100% - 32px);
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.run-btn:hover { background: var(--accent-hover); }
+
+/* ===== Concept Card ===== */
+.concept-card {
+  margin: 0 16px 12px;
+  border: 1px solid #85B7EB;
+  border-radius: 10px;
+  background: #E6F1FB;
+  overflow: hidden;
+}
+.concept-header {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #185FA5;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.concept-body {
+  padding: 0 12px 12px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #444441;
+}
+.concept-body h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 8px 0 2px;
+  color: #185FA5;
+}
+.concept-body h4.buy { color: #e74c3c; }
+.concept-body h4.sell { color: #27ae60; }
+.concept-body p { margin-bottom: 4px; }
+.concept-body .hint { color: var(--text-secondary); font-size: 11px; }
+.concept-body .legend-item { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+.concept-body .legend-line { width: 20px; height: 2px; }
+.concept-body .legend-dot { width: 8px; height: 8px; }
+.concept-body .tip {
+  background: #fff;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  border-left: 3px solid var(--accent);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ===== Chart Area ===== */
+.chart-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+.chart-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 0;
+  overflow: hidden;
+}
+.chart-box .chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chart-box .chart-title .badge {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.plot-div {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ===== Metrics Panel ===== */
+.metrics-panel {
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.metrics-panel::-webkit-scrollbar { height: 4px; }
+.metrics-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+.metric-card {
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 12px;
+  position: relative;
+  cursor: default;
+  transition: box-shadow 0.2s;
+}
+.metric-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.metric-card .name {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.metric-card .name .help-icon {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.metric-card .value {
+  font-size: 22px;
+  font-weight: 600;
+  font-family: "SF Mono", "Courier New", monospace;
+}
+.metric-card .value.pos { color: #27ae60; }
+.metric-card .value.neg { color: #e74c3c; }
+.metric-card .value.neu { color: var(--text-primary); }
+.metric-card .value.info { color: var(--color-ma-short); }
+
+/* Tooltip */
+.tooltip-wrap {
+  position: relative;
+}
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  width: 280px;
+  white-space: pre-wrap;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1a1a2e;
+}
+.tooltip-wrap:hover .tooltip { opacity: 1; }
+.tooltip h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.tooltip .formula {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: "SF Mono", "Courier New", monospace;
+  font-size: 11px;
+  color: #a0d2ff;
+  margin: 4px 0;
+}
+.tooltip .guide { color: #a0d2ff; font-size: 11px; margin-top: 6px; }
+.tooltip .tip-text { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ===== Top Nav ===== -->
+<nav class="top-nav">
+  <div class="logo">MA <span>Crossover</span> Backtest</div>
+  <div class="subtitle">双均线交叉策略回测</div>
+  <div class="stock-info" id="stockInfo">
+    <span>请加载股票数据</span>
+  </div>
+  <button class="btn-nav" onclick="exportChart()">导出图表</button>
+</nav>
+
+<!-- ===== Main Layout ===== -->
+<div class="main-layout">
+
+<!-- ===== Sidebar ===== -->
+<aside class="sidebar">
+  <div class="sidebar-header">控制面板</div>
+
+  <div class="section-label">股票选择</div>
+  <select class="stock-select" id="stockSelect" onchange="loadStock(this.value)">
+    <option value="">-- 选择股票 --</option>
+  </select>
+
+  <div class="section-label">均线周期</div>
+
+  <div class="slider-row">
+    <label><span><span class="dot" style="background:#3498db"></span>短均线</span></label>
+    <div class="slider-wrap">
+      <div class="slider-track-wrap">
+        <div class="slider-fill short" id="shortFill"></div>
+        <input type="range" id="shortPeriod" min="3" max="30" value="5"
+               oninput="onSliderChange('short', this.value)" onchange="onSliderDone()">
+      </div>
+      <span class="slider-value" id="shortVal">5</span>
+    </div>
+  </div>
+
+  <div class="slider-row">
+    <label><span><span class="dot" style="background:#f39c12"></span>长均线</span></label>
+    <div class="slider-wrap">
+      <div class="slider-track-wrap">
+        <div class="slider-fill long" id="longFill"></div>
+        <input type="range" id="longPeriod" min="10" max="120" value="20"
+               class="long-range" oninput="onSliderChange('long', this.value)" onchange="onSliderDone()">
+      </div>
+      <span class="slider-value" id="longVal">20</span>
+    </div>
+  </div>
+
+  <div class="preset-btns" id="presetBtns">
+    <button class="preset-btn" onclick="setPreset(5,20)">[5,20]</button>
+    <button class="preset-btn" onclick="setPreset(10,30)">[10,30]</button>
+    <button class="preset-btn" onclick="setPreset(20,60)">[20,60]</button>
+    <button class="preset-btn" onclick="setPreset(5,60)">[5,60]</button>
+  </div>
+
+  <div class="section-label">交易费用</div>
+  <div class="fee-row">
+    <div class="fee-toggle">
+      <input type="radio" name="fee" id="feeLow" value="0.0001" checked onchange="runBacktest()">
+      <label for="feeLow">万分之一</label>
+      <input type="radio" name="fee" id="feeHigh" value="0.0003" onchange="runBacktest()">
+      <label for="feeHigh">万分之三</label>
+    </div>
+  </div>
+
+  <div class="section-label">初始资金</div>
+  <div class="capital-row">
+    <label>¥</label>
+    <input type="number" id="initialCapital" value="100000" min="10000" step="10000" onchange="runBacktest()">
+  </div>
+
+  <button class="run-btn" onclick="runBacktest()">运行回测</button>
+
+  <!-- ===== Concept Card ===== -->
+  <div class="concept-card" id="conceptCard">
+    <div class="concept-header" onclick="toggleConcept(this)">
+      <span>策略概念</span>
+      <span>▼</span>
+    </div>
+    <div class="concept-body" id="conceptBody">
+      <h4>双均线策略</h4>
+      <p>同时计算两条不同周期的简单移动平均线（SMA），通过交叉关系判断趋势方向。</p>
+      <p class="hint">短期均线敏感捕捉动能变化，长期均线过滤噪音确定方向。</p>
+      <p class="hint">趋势策略，不预测未来，只跟随趋势。在单边趋势中表现优异，震荡市易生假信号。</p>
+
+      <h4 class="buy">▲ 金叉 — 买入信号</h4>
+      <p>短期均线从<strong>下方</strong>上穿长期均线。</p>
+      <p class="hint">短期动能超过长期趋势，买盘增强 → 全仓买入。</p>
+      <p class="hint">前一日: 短 ≤ 长 ； 当日: 短 &gt; 长 → 触发买入</p>
+
+      <h4 class="sell">▼ 死叉 — 卖出信号</h4>
+      <p>短期均线从<strong>上方</strong>下穿长期均线。</p>
+      <p class="hint">动能衰减、卖压增加，趋势可能反转 → 清仓离场。</p>
+      <p class="hint">前一日: 短 ≥ 长 ； 当日: 短 &lt; 长 → 触发卖出</p>
+
+      <div class="tip">提示：连续出现的同向信号（连买/连卖）会被忽略，避免频繁交易侵蚀利润。</div>
+
+      <div style="margin-top:8px">
+        <div class="legend-item"><span class="legend-line" style="background:#888"></span><span>收盘价</span></div>
+        <div class="legend-item"><span class="legend-line" style="background:#3498db"></span><span>MA-Short (短期均线)</span></div>
+        <div class="legend-item"><span class="legend-line" style="background:#f39c12"></span><span>MA-Long (长期均线)</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span><span>▲ 金叉买入点</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#27ae60"></span><span>▼ 死叉卖出点</span></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== Chart Area ===== -->
+<main class="chart-area">
+  <div class="chart-box">
+    <div class="chart-title">
+      <span>价格走势 + 均线 + 交易信号</span>
+      <span class="badge" id="chartBadge">MA-5 / MA-20</span>
+    </div>
+    <div class="plot-div" id="mainChart"></div>
+  </div>
+</main>
+
+</div>
+
+<!-- ===== Metrics Panel ===== -->
+<div class="metrics-panel" id="metricsPanel">
+  <div class="metric-card">
+    <div class="name tooltip-wrap">累计回报
+      <span class="help-icon">?</span>
+      <div class="tooltip"><h4>累计回报 (Cumulative Return)</h4>策略在整个回测期间的总收益率，衡量"总共赚了多少"。<div class="formula">(最终资产 - 初始资金) / 初始资金</div><div class="tip-text">> 0% 盈利；< 0% 亏损。不分时间长短，跨周期对比请看年化收益。</div></div>
+    </div>
+    <div class="value neu" id="mCumReturn">--</div>
+  </div>
+  <div class="metric-card">
+    <div class="name tooltip-wrap">年化收益
+      <span class="help-icon">?</span>
+      <div class="tooltip"><h4>年化收益率 (Annualized Return)</h4>把总收益率折算成"平均每年赚多少"，消除回测周期不同带来的不可比性。<div class="formula">(1 + R)^(252 / T) - 1</div><div class="tip-text">R = 累计回报；T = 回测交易日数；252 = A股年交易日</div></div>
+    </div>
+    <div class="value neu" id="mAnnual">--</div>
+  </div>
+  <div class="metric-card">
+    <div class="name tooltip-wrap">最大回撤 MDD
+      <span class="help-icon">?</span>
+      <div class="tooltip"><h4>最大回撤 (Maximum Drawdown)</h4>策略在回测期间经历的最大连续亏损幅度，衡量"最坏情况下会亏多少"。<div class="formula">max( (峰值 - 谷值) / 峰值 )</div><div class="guide">&lt; 10% 低风险 | 10%-20% 中等 | 20%-30% 高风险 | &gt; 30% 极高</div><div class="tip-text">这不是一次交易亏损，而是资产曲线从最高点到最低点的总跌幅。</div></div>
+    </div>
+    <div class="value neg" id="mMDD">--</div>
+  </div>
+  <div class="metric-card">
+    <div class="name tooltip-wrap">夏普比率
+      <span class="help-icon">?</span>
+      <div class="tooltip"><h4>夏普比率 (Sharpe Ratio)</h4>衡量"每承担一单位风险，能换来多少超额收益"。<div class="formula">(年化收益 - 无风险利率) / 年化波动率</div><div class="guide">&lt; 0 跑输无风险 | 0-1 一般 | 1-2 良好 | &gt; 2 优秀</div><div class="tip-text">无风险利率默认 2.5%（参考中国10年期国债）。高夏普代表风险调整后收益优秀。</div></div>
+    </div>
+    <div class="value info" id="mSharpe">--</div>
+  </div>
+  <div class="metric-card">
+    <div class="name tooltip-wrap">胜率
+      <span class="help-icon">?</span>
+      <div class="tooltip"><h4>胜率 (Win Rate)</h4>盈利交易次数占总交易次数的比例，衡量"下单有多准"。<div class="formula">盈利交易 / 总交易次数</div><div class="tip-text">高胜率不等于高收益。胜率需结合盈亏比综合评估。</div></div>
+    </div>
+    <div class="value neu" id="mWinRate">--</div>
+  </div>
+  <div class="metric-card">
+    <div class="name tooltip-wrap">总交易次数
+      <span class="help-icon">?</span>
+      <div class="tooltip"><h4>总交易次数</h4>回测期间完成的完整买卖配对数量。<div class="tip-text">一次完整交易 = 买入 + 卖出。同向信号被忽略。交易过于频繁时手续费会显著侵蚀利润。</div></div>
+    </div>
+    <div class="value neu" id="mTrades">--</div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   数据占位符 — 构建脚本将替换此处
+   ========================================================= */
+const EMBEDDED_DATA = /* __DATA_GOES_HERE__ */ {};
+
+/* =========================================================
+   全局状态
+   ========================================================= */
+let currentStock = null;
+let currentData = [];
+let shortPeriod = 5;
+let longPeriod = 20;
+let backtestResult = null;
+let debounceTimer = null;
+
+/* =========================================================
+   初始化
+   ========================================================= */
+function init() {
+  // 填充股票选择下拉
+  const sel = document.getElementById('stockSelect');
+  for (const code in EMBEDDED_DATA) {
+    const info = EMBEDDED_DATA[code];
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = `${code} ${info.name}`;
+    sel.appendChild(opt);
+  }
+  // 默认加载第一个
+  const keys = Object.keys(EMBEDDED_DATA);
+  if (keys.length > 0) {
+    sel.value = keys[0];
+    loadStock(keys[0]);
+  }
+  // 更新滑块 fill
+  updateSliderFill('short', shortPeriod, 3, 30);
+  updateSliderFill('long', longPeriod, 10, 120);
+}
+
+function loadStock(code) {
+  if (!code || !EMBEDDED_DATA[code]) return;
+  currentStock = code;
+  const info = EMBEDDED_DATA[code];
+  // 解析数据
+  currentData = info.data.split(';').map(s => {
+    const [trade_date, open, high, low, close, vol] = s.split(',');
+    return { trade_date, open: +open, high: +high, low: +low, close: +close, vol: +vol };
+  });
+  // 更新顶部信息
+  const dates = currentData.map(d => d.trade_date);
+  const start = dates[0], end = dates[dates.length - 1];
+  document.getElementById('stockInfo').innerHTML =
+    `<span>${info.ts_code || code} ${info.name}</span><span>|</span><span>${start} ~ ${end}</span><span>|</span><span>${dates.length} 条</span>`;
+  // 运行回测
+  runBacktest();
+}
+
+/* =========================================================
+   滑块交互
+   ========================================================= */
+function onSliderChange(type, val) {
+  val = parseInt(val);
+  if (type === 'short') { shortPeriod = val; document.getElementById('shortVal').textContent = val; }
+  else { longPeriod = val; document.getElementById('longVal').textContent = val; }
+  updateSliderFill(type, val, type === 'short' ? 3 : 10, type === 'short' ? 30 : 120);
+  // 更新 badge
+  document.getElementById('chartBadge').textContent = `MA-${shortPeriod} / MA-${longPeriod}`;
+  // 防抖重绘
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => runBacktest(), 300);
+}
+
+function onSliderDone() {
+  clearTimeout(debounceTimer);
+  runBacktest();
+}
+
+function updateSliderFill(type, val, min, max) {
+  const el = document.getElementById(type + 'Fill');
+  const pct = (val - min) / (max - min) * 100;
+  el.style.width = pct + '%';
+}
+
+function setPreset(s, l) {
+  shortPeriod = s; longPeriod = l;
+  document.getElementById('shortPeriod').value = s;
+  document.getElementById('longPeriod').value = l;
+  document.getElementById('shortVal').textContent = s;
+  document.getElementById('longVal').textContent = l;
+  updateSliderFill('short', s, 3, 30);
+  updateSliderFill('long', l, 10, 120);
+  document.getElementById('chartBadge').textContent = `MA-${s} / MA-${l}`;
+  // 更新预设按钮状态
+  document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+  runBacktest();
+}
+
+function toggleConcept(header) {
+  const card = header.closest('.concept-card');
+  const body = card.querySelector('.concept-body');
+  const arrow = header.querySelector('span:last-child');
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  arrow.textContent = body.style.display === 'none' ? '▶' : '▼';
+}
+
+/* =========================================================
+   计算引擎
+   ========================================================= */
+function calcSMA(prices, period) {
+  const result = new Array(prices.length).fill(null);
+  let sum = 0;
+  for (let i = 0; i < prices.length; i++) {
+    sum += prices[i];
+    if (i >= period) sum -= prices[i - period];
+    if (i >= period - 1) result[i] = sum / period;
+  }
+  return result;
+}
+
+function generateSignals(shortMA, longMA) {
+  const signals = new Array(shortMA.length).fill(0);
+  for (let i = 1; i < shortMA.length; i++) {
+    if (shortMA[i] == null || longMA[i] == null) continue;
+    if (shortMA[i-1] == null || longMA[i-1] == null) continue;
+    if (shortMA[i-1] <= longMA[i-1] && shortMA[i] > longMA[i]) {
+      signals[i] = 1;  // 买入
+    } else if (shortMA[i-1] >= longMA[i-1] && shortMA[i] < longMA[i]) {
+      signals[i] = -1; // 卖出
+    }
+  }
+  return signals;
+}
+
+function runBacktest() {
+  if (!currentData.length) return;
+  const prices = currentData.map(d => d.close);
+  const dates = currentData.map(d => d.trade_date);
+  const shortMA = calcSMA(prices, shortPeriod);
+  const longMA = calcSMA(prices, longPeriod);
+  const signals = generateSignals(shortMA, longMA);
+  const feeRate = parseFloat(document.querySelector('input[name="fee"]:checked').value);
+  const initialCapital = parseFloat(document.getElementById('initialCapital').value) || 100000;
+
+  // 模拟交易
+  let cash = initialCapital;
+  let shares = 0;
+  let position = 0;
+  const equity = [];
+  const trades = [];
+
+  for (let i = 0; i < prices.length; i++) {
+    const price = prices[i];
+    // 卖出（先卖后买）
+    if (signals[i] === -1 && position === 1) {
+      const sellAmount = shares * price * (1 - feeRate);
+      cash = sellAmount;
+      trades.push({ date: dates[i], type: 'SELL', price, shares, amount: sellAmount, fee: shares * price * feeRate, cash });
+      shares = 0; position = 0;
+    }
+    // 买入
+    if (signals[i] === 1 && position === 0) {
+      shares = Math.floor(cash / (price * (1 + feeRate)));
+      const cost = shares * price * (1 + feeRate);
+      trades.push({ date: dates[i], type: 'BUY', price, shares, amount: cost, fee: shares * price * feeRate, cash: cash - cost });
+      cash = cash - cost; position = 1;
+    }
+    equity.push(cash + shares * price);
+  }
+
+  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates, initialCapital, feeRate };
+  drawChart();
+  updateMetrics();
+}
+
+/* =========================================================
+   图表绘制
+   ========================================================= */
+function drawChart() {
+  const { equity, signals, shortMA, longMA, prices, dates } = backtestResult;
+  const buyIdx = [], buyY = [], buyText = [];
+  const sellIdx = [], sellY = [], sellText = [];
+  for (let i = 0; i < signals.length; i++) {
+    if (signals[i] === 1) {
+      buyIdx.push(dates[i]);
+      buyY.push(shortMA[i] || prices[i]);
+      buyText.push(`BUY<br>日期: ${dates[i]}<br>价格: ${prices[i].toFixed(2)}`);
+    } else if (signals[i] === -1) {
+      sellIdx.push(dates[i]);
+      sellY.push(shortMA[i] || prices[i]);
+      sellText.push(`SELL<br>日期: ${dates[i]}<br>价格: ${prices[i].toFixed(2)}`);
+    }
+  }
+
+  const traces = [
+    { x: dates, y: prices, type: 'scatter', mode: 'lines', name: '收盘价',
+      line: { color: '#888', width: 1.2 }, hovertemplate: '日期: %{x}<br>收盘: %{y:.2f}<extra></extra>' },
+    { x: dates, y: shortMA, type: 'scatter', mode: 'lines', name: `MA-${shortPeriod}`,
+      line: { color: '#3498db', width: 1.5 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
+    { x: dates, y: longMA, type: 'scatter', mode: 'lines', name: `MA-${longPeriod}`,
+      line: { color: '#f39c12', width: 1.5 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
+    { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers', name: '买入▲',
+      marker: { symbol: 'triangle-up', size: 12, color: '#e74c3c', line: { width: 0 } },
+      hovertemplate: '%{text}<extra></extra>', text: buyText },
+    { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers', name: '卖出▼',
+      marker: { symbol: 'triangle-down', size: 12, color: '#27ae60', line: { width: 0 } },
+      hovertemplate: '%{text}<extra></extra>', text: sellText }
+  ];
+
+  const layout = {
+    margin: { t: 30, l: 50, r: 20, b: 40 },
+    plot_bgcolor: '#fff', paper_bgcolor: '#fff',
+    xaxis: { title: { text: '日期', font: { size: 11 } }, gridcolor: '#f0f0f0', tickangle: -45, tickfont: { size: 10 } },
+    yaxis: { title: { text: '价格', font: { size: 11 } }, gridcolor: '#f0f0f0', tickfont: { size: 10 } },
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#eee', borderwidth: 1, font: { size: 11 } },
+    font: { family: 'Microsoft YaHei, sans-serif', size: 12 },
+    hovermode: 'x unified',
+    showlegend: true
+  };
+
+  Plotly.newPlot('mainChart', traces, layout, { displayModeBar: false, responsive: true });
+}
+
+function exportChart() {
+  Plotly.downloadImage('mainChart', { format: 'png', filename: `MA_Backtest_${currentStock || 'chart'}` });
+}
+
+/* =========================================================
+   指标计算与渲染
+   ========================================================= */
+function updateMetrics() {
+  const { equity, trades, initialCapital } = backtestResult;
+  const n = equity.length;
+  if (n === 0) return;
+
+  // 累计回报
+  const cumReturn = (equity[n - 1] - initialCapital) / initialCapital;
+  setMetric('mCumReturn', (cumReturn * 100).toFixed(2) + '%', cumReturn >= 0 ? 'pos' : 'neg');
+
+  // 年化收益
+  const annualReturn = Math.pow(1 + cumReturn, 252 / n) - 1;
+  setMetric('mAnnual', (annualReturn * 100).toFixed(2) + '%', annualReturn >= 0 ? 'pos' : 'neg');
+
+  // 最大回撤
+  let peak = equity[0], mdd = 0;
+  for (const v of equity) {
+    if (v > peak) peak = v;
+    const dd = (peak - v) / peak;
+    if (dd > mdd) mdd = dd;
+  }
+  setMetric('mMDD', '-' + (mdd * 100).toFixed(2) + '%', 'neg');
+
+  // 夏普比率
+  const dailyReturns = [];
+  for (let i = 1; i < n; i++) dailyReturns.push((equity[i] - equity[i-1]) / equity[i-1]);
+  const avg = dailyReturns.reduce((a,b) => a+b, 0) / dailyReturns.length;
+  const std = Math.sqrt(dailyReturns.reduce((s,r) => s + (r-avg)**2, 0) / (dailyReturns.length - 1));
+  const sharpe = (avg * 252 - 0.025) / (std * Math.sqrt(252));
+  setMetric('mSharpe', isFinite(sharpe) ? sharpe.toFixed(2) : '--', 'info');
+
+  // 胜率 & 交易次数
+  const fullTrades = [];
+  let lastBuy = null;
+  for (const t of trades) {
+    if (t.type === 'BUY') lastBuy = t;
+    else if (t.type === 'SELL' && lastBuy) {
+      fullTrades.push({ buy: lastBuy, sell: t });
+      lastBuy = null;
+    }
+  }
+  const winCount = fullTrades.filter(t => t.sell.amount > t.buy.amount).length;
+  const winRate = fullTrades.length ? (winCount / fullTrades.length * 100) : 0;
+  setMetric('mWinRate', winRate.toFixed(1) + '%', 'neu');
+  setMetric('mTrades', String(fullTrades.length), 'neu');
+}
+
+function setMetric(id, text, cls) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'value ' + cls;
+}
+
+/* =========================================================
+   启动
+   ========================================================= */
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
