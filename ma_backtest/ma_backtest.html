@@ -905,6 +905,8 @@ function drawChart() {
     plot_bgcolor: '#131722', paper_bgcolor: '#131722',
     xaxis: { title: { text: '日期', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
+      tickmode: 'array', tickvals: dates.filter((d, i) => i % 20 === 0),
+      tickformat: '%Y-%m-%d', tickangle: -45,
       rangeslider: { visible: false }, showgrid: true, zeroline: false },
     yaxis: { title: { text: '价格 (¥)', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
