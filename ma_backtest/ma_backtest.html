@@ -728,7 +728,7 @@ body {
       </div>
       <div class="explain-item">
         <div class="explain-title">最大回撤 MDD</div>
-        <div class="explain-text">最大连续亏损幅度，从峰值到谷值。&lt; 10% 低风险，10-20% 中等，20-30% 高，&gt; 30% 极高。</div>
+        <div class="explain-text">MDD = max(1 - 净值 / 历史峰值)。遍历每日净值，跟踪历史最高点，计算从峰值到当前的最大亏损比例。半仓因保留现金，MDD 约为全仓的一半。</div>
       </div>
       <div class="explain-item">
         <div class="explain-title">夏普比率</div>
