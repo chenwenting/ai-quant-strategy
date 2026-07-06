@@ -754,10 +754,11 @@ function loadStock(code) {
   if (!code || !EMBEDDED_DATA[code]) return;
   currentStock = code;
   const info = EMBEDDED_DATA[code];
-  currentData = info.data.split(';').map(s => {
-    const [trade_date, open, high, low, close, vol] = s.split(',');
-    return { trade_date, open: +open, high: +high, low: +low, close: +close, vol: +vol };
-  });
+    currentData = info.data.split(';').map(s => {
+      const [trade_date, open, high, low, close, vol] = s.split(',');
+      const fmtDate = trade_date.slice(0,4) + '-' + trade_date.slice(4,6) + '-' + trade_date.slice(6,8);
+      return { trade_date: fmtDate, open: +open, high: +high, low: +low, close: +close, vol: +vol };
+    });
   const dates = currentData.map(d => d.trade_date);
   document.getElementById('stockInfo').innerHTML =
     `<span>${info.ts_code || code}  ${info.name}</span><span>|</span><span>${dates[0]} ~ ${dates[dates.length-1]}</span><span>|</span><span>${dates.length} 条</span>`;
@@ -905,8 +906,7 @@ function drawChart() {
     plot_bgcolor: '#131722', paper_bgcolor: '#131722',
     xaxis: { title: { text: '日期', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
-      tickmode: 'array', tickvals: dates.filter((d, i) => i % 20 === 0),
-      tickformat: '%Y-%m-%d', tickangle: -45,
+      tickmode: 'array', tickvals: dates.filter((d, i) => i % 20 === 0), tickangle: -45,
       rangeslider: { visible: false }, showgrid: true, zeroline: false },
     yaxis: { title: { text: '价格 (¥)', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
