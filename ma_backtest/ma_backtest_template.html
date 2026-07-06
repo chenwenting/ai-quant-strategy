@@ -7,14 +7,14 @@
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <style>
 :root {
-  --color-up:     #e74c3c;
-  --color-down:   #27ae60;
-  --color-ma-short: #3498db;
-  --color-ma-long:  #f39c12;
+  --color-up:     #ef5350;
+  --color-down:   #26a69a;
+  --color-ma-short: #4fc3f7;
+  --color-ma-long:  #ab47bc;
   --accent:        #4361ee;
   --accent-hover:  #3a56d4;
   --bg-primary:    #ffffff;
-  --bg-secondary:  #f8f9fa;
+  --bg-secondary:  #f5f6f8;
   --bg-sidebar:    #f0f2f5;
   --text-primary:  #1a1a2e;
   --text-secondary:#6c757d;
@@ -32,49 +32,49 @@ body {
 
 /* ===== Top Nav ===== */
 .top-nav {
-  height: 56px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  height: 58px;
+  background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
   color: #fff;
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 0 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
   z-index: 100;
   flex-shrink: 0;
 }
 .top-nav .logo {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-right: 8px;
+  letter-spacing: 1px;
 }
 .top-nav .logo span { color: var(--accent); }
 .top-nav .subtitle {
-  font-size: 12px;
-  color: rgba(255,255,255,0.6);
-  margin-left: 12px;
-  padding-left: 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  margin-left: 14px;
+  padding-left: 14px;
   border-left: 1px solid rgba(255,255,255,0.2);
 }
 .top-nav .stock-info {
   margin-left: auto;
-  font-size: 13px;
-  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 .top-nav .btn-nav {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
   color: #fff;
-  padding: 6px 14px;
-  border-radius: 6px;
+  padding: 7px 16px;
+  border-radius: 7px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   transition: all 0.2s;
+  margin-left: 16px;
 }
-.top-nav .btn-nav:hover { background: rgba(255,255,255,0.22); }
+.top-nav .btn-nav:hover { background: rgba(255,255,255,0.2); }
 
 /* ===== Main Layout ===== */
 .main-layout {
@@ -85,8 +85,8 @@ body {
 
 /* ===== Sidebar ===== */
 .sidebar {
-  width: 300px;
-  min-width: 300px;
+  width: 320px;
+  min-width: 320px;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-color);
   display: flex;
@@ -98,70 +98,75 @@ body {
 .sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
 
 .sidebar-header {
-  padding: 14px 16px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--border-color);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
 .section-label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 12px 16px 8px;
+  letter-spacing: 1.2px;
+  margin: 16px 18px 10px;
 }
 
 /* ===== Stock Selector ===== */
 .stock-select {
-  margin: 0 16px 10px;
-  padding: 8px 12px;
+  margin: 0 18px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 13px;
-  width: calc(100% - 32px);
+  border-radius: 9px;
+  font-size: 14px;
+  width: calc(100% - 36px);
   background: #fff;
   color: var(--text-primary);
   cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
 }
 
 /* ===== Slider Row ===== */
 .slider-row {
-  margin: 0 16px 12px;
+  margin: 0 18px 14px;
 }
 .slider-row label {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 .slider-row label .dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  display: inline-block; margin-right: 6px;
+  width: 9px; height: 9px; border-radius: 50%;
+  display: inline-block; margin-right: 7px;
 }
 
 .slider-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .slider-track-wrap {
   position: relative;
   flex: 1;
-  height: 6px;
+  height: 8px;
 }
 .slider-track-wrap input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 6px;
+  height: 8px;
   background: #ddd;
-  border-radius: 3px;
+  border-radius: 4px;
   outline: none;
   position: absolute;
   top: 0; left: 0;
@@ -170,11 +175,11 @@ body {
 }
 .slider-track-wrap input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px; height: 16px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid var(--color-ma-short);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  border: 2.5px solid var(--color-ma-short);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   cursor: pointer;
   position: relative;
   z-index: 3;
@@ -186,8 +191,8 @@ body {
 .slider-fill {
   position: absolute;
   top: 0; left: 0;
-  height: 6px;
-  border-radius: 3px 0 0 3px;
+  height: 8px;
+  border-radius: 4px 0 0 4px;
   pointer-events: none;
   z-index: 1;
   transition: width 0.1s ease;
@@ -196,10 +201,10 @@ body {
 .slider-fill.long { background: var(--color-ma-long); }
 
 .slider-value {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-primary);
-  min-width: 28px;
+  min-width: 30px;
   text-align: right;
   flex-shrink: 0;
   padding-left: 4px;
@@ -208,19 +213,20 @@ body {
 /* ===== Preset Buttons ===== */
 .preset-btns {
   display: flex;
-  gap: 6px;
-  margin: 0 16px 12px;
+  gap: 7px;
+  margin: 0 18px 14px;
   flex-wrap: wrap;
 }
 .preset-btn {
-  font-size: 12px;
-  padding: 4px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  font-size: 13px;
+  padding: 5px 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 7px;
   background: #fff;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s;
+  font-weight: 500;
 }
 .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
 .preset-btn.active {
@@ -231,81 +237,83 @@ body {
 
 /* ===== Fee Toggle ===== */
 .fee-row {
-  margin: 0 16px 12px;
+  margin: 0 18px 14px;
 }
 .fee-toggle {
   display: flex;
-  gap: 0;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 9px;
   overflow: hidden;
 }
 .fee-toggle label {
   flex: 1;
   text-align: center;
-  padding: 8px 0;
-  font-size: 13px;
+  padding: 10px 0;
+  font-size: 14px;
   cursor: pointer;
   background: #fff;
   color: var(--text-secondary);
   transition: all 0.2s;
   user-select: none;
+  font-weight: 500;
 }
 .fee-toggle input[type="radio"] { display: none; }
 .fee-toggle input[type="radio"]:checked + label {
   background: var(--accent);
   color: #fff;
-  font-weight: 500;
+  font-weight: 600;
 }
 .fee-toggle label:not(:last-child) {
-  border-right: 1px solid var(--border-color);
+  border-right: 1.5px solid var(--border-color);
 }
 
 /* ===== Capital Input ===== */
 .capital-row {
-  margin: 0 16px 12px;
+  margin: 0 18px 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.capital-row label { font-size: 13px; color: var(--text-primary); flex-shrink: 0; }
+.capital-row label { font-size: 14px; font-weight: 500; color: var(--text-primary); flex-shrink: 0; }
 .capital-row input {
   flex: 1;
-  padding: 6px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 7px;
+  font-size: 14px;
   text-align: right;
+  font-weight: 500;
 }
 
 /* ===== Run Button ===== */
 .run-btn {
-  margin: 0 16px 12px;
-  width: calc(100% - 32px);
-  padding: 10px 0;
+  margin: 0 18px 14px;
+  width: calc(100% - 36px);
+  padding: 11px 0;
   border: none;
-  border-radius: 8px;
+  border-radius: 9px;
   background: var(--accent);
   color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 .run-btn:hover { background: var(--accent-hover); }
+.run-btn:active { transform: scale(0.98); }
 
 /* ===== Concept Card ===== */
 .concept-card {
-  margin: 0 16px 12px;
+  margin: 0 18px 14px;
   border: 1px solid #85B7EB;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #E6F1FB;
   overflow: hidden;
 }
 .concept-header {
-  padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 700;
   color: #185FA5;
   cursor: pointer;
   user-select: none;
@@ -314,31 +322,26 @@ body {
   align-items: center;
 }
 .concept-body {
-  padding: 0 12px 12px;
-  font-size: 12px;
-  line-height: 1.7;
+  padding: 0 14px 14px;
+  font-size: 13px;
+  line-height: 1.8;
   color: #444441;
 }
-.concept-body h4 {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 8px 0 2px;
-  color: #185FA5;
-}
+.concept-body h4 { font-size: 14px; font-weight: 600; margin: 10px 0 3px; color: #185FA5; }
 .concept-body h4.buy { color: #e74c3c; }
 .concept-body h4.sell { color: #27ae60; }
-.concept-body p { margin-bottom: 4px; }
-.concept-body .hint { color: var(--text-secondary); font-size: 11px; }
-.concept-body .legend-item { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
-.concept-body .legend-line { width: 20px; height: 2px; }
-.concept-body .legend-dot { width: 8px; height: 8px; }
+.concept-body p { margin-bottom: 5px; }
+.concept-body .hint { color: var(--text-secondary); font-size: 12px; }
+.concept-body .legend-item { display: flex; align-items: center; gap: 7px; margin: 3px 0; }
+.concept-body .legend-line { width: 22px; height: 2.5px; }
+.concept-body .legend-dot { width: 9px; height: 9px; }
 .concept-body .tip {
   background: #fff;
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin-top: 6px;
+  border-radius: 7px;
+  padding: 9px 12px;
+  margin-top: 8px;
   border-left: 3px solid var(--accent);
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 
@@ -354,105 +357,137 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 12px 16px 0;
+  padding: 14px 18px 6px;
   min-height: 0;
 }
 .chart-box .chart-title {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .chart-box .chart-title .badge {
-  font-size: 11px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text-secondary);
   background: var(--bg-secondary);
-  padding: 2px 10px;
-  border-radius: 10px;
+  padding: 3px 12px;
+  border-radius: 12px;
 }
 .plot-div {
   flex: 1;
   min-height: 0;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 /* ===== Metrics Panel ===== */
 .metrics-panel {
-  flex: 1;
-  padding: 12px 16px 12px;
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
+  flex: 0 0 auto;
+  padding: 8px 18px 14px;
+  background: var(--bg-primary);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 10px;
-  align-content: start;
-  overflow-y: auto;
   min-height: 0;
 }
-.metrics-panel::-webkit-scrollbar { width: 4px; }
-.metrics-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
 .metric-card {
   background: #fff;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 14px 16px;
-  position: relative;
-  cursor: default;
-  transition: box-shadow 0.2s;
+  padding: 16px 18px;
+  transition: box-shadow 0.2s, transform 0.15s;
 }
-.metric-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.metric-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-1px); }
 .metric-card .name {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text-secondary);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.metric-card .name .help-icon {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: help;
-  flex-shrink: 0;
-  margin-left: 4px;
+  margin-bottom: 8px;
 }
 .metric-card .value {
-  font-size: 24px;
-  font-weight: 600;
-  font-family: "SF Mono", "Courier New", monospace;
+  font-size: 28px;
+  font-weight: 700;
+  font-family: "SF Mono", "Consolas", "Courier New", monospace;
+  letter-spacing: -0.5px;
 }
 .metric-card .value.pos { color: #27ae60; }
 .metric-card .value.neg { color: #e74c3c; }
 .metric-card .value.neu { color: var(--text-primary); }
 .metric-card .value.info { color: var(--color-ma-short); }
 
+/* ===== Trade Log ===== */
+.trade-log-section {
+  margin: 0 18px 14px;
+}
+.trade-log-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.trade-log-section h3 .count {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.trade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.trade-table th {
+  background: var(--bg-sidebar);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  text-align: center;
+  border-bottom: 2px solid var(--border-color);
+}
+.trade-table td {
+  padding: 10px 14px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  font-weight: 500;
+}
+.trade-table tr:last-child td { border-bottom: none; }
+.trade-table tr:hover td { background: #f8f9ff; }
+.trade-table .buy-row { color: #e74c3c; }
+.trade-table .sell-row { color: #27ae60; }
+.trade-table .profit { font-weight: 600; }
+.trade-table .trade-arrow { font-size: 14px; }
+
 /* ===== Concept Explain Card ===== */
 .concept-explain {
-  grid-column: 1 / -1;
+  margin: 4px 18px 14px;
   background: #E6F1FB;
   border: 1px solid #85B7EB;
   border-radius: 12px;
-  padding: 14px 16px;
-  margin-top: 4px;
+  padding: 16px 18px;
 }
 .concept-explain .explain-header {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #185FA5;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #b5d4f4;
 }
 .concept-explain .explain-body {
@@ -462,9 +497,9 @@ body {
 }
 .concept-explain .explain-item {
   background: #fff;
-  border-radius: 8px;
-  padding: 10px 12px;
-  border-left: 3px solid #3498db;
+  border-radius: 9px;
+  padding: 12px 14px;
+  border-left: 4px solid #3498db;
 }
 .concept-explain .explain-item:nth-child(3),
 .concept-explain .explain-item:nth-child(4) {
@@ -475,41 +510,40 @@ body {
   border-left-color: #27ae60;
 }
 .concept-explain .explain-title {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #1a1a2e;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 .concept-explain .explain-text {
-  font-size: 11px;
+  font-size: 12px;
   color: #6c757d;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+@media (max-width: 1500px) { .metrics-panel { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 1200px) {
   .concept-explain .explain-body { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
   .concept-explain .explain-body { grid-template-columns: 1fr; }
+  .metrics-panel { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
-<!-- ===== Top Nav ===== -->
 <nav class="top-nav">
-  <div class="logo">MA <span>Crossover</span> Backtest</div>
-  <div class="subtitle">双均线交叉策略回测</div>
+  <div class="logo">MA <span>Crossover</span> Strategy</div>
+  <div class="subtitle">双均线交叉策略回测工具</div>
   <div class="stock-info" id="stockInfo">
     <span>请加载股票数据</span>
   </div>
   <button class="btn-nav" onclick="exportChart()">导出图表</button>
 </nav>
 
-<!-- ===== Main Layout ===== -->
 <div class="main-layout">
 
-<!-- ===== Sidebar ===== -->
 <aside class="sidebar">
   <div class="sidebar-header">控制面板</div>
 
@@ -521,7 +555,7 @@ body {
   <div class="section-label">均线周期</div>
 
   <div class="slider-row">
-    <label><span><span class="dot" style="background:#3498db"></span>短均线</span></label>
+    <label><span><span class="dot" style="background:#4fc3f7"></span>短均线</span></label>
     <div class="slider-wrap">
       <div class="slider-track-wrap">
         <div class="slider-fill short" id="shortFill"></div>
@@ -533,7 +567,7 @@ body {
   </div>
 
   <div class="slider-row">
-    <label><span><span class="dot" style="background:#f39c12"></span>长均线</span></label>
+    <label><span><span class="dot" style="background:#ab47bc"></span>长均线</span></label>
     <div class="slider-wrap">
       <div class="slider-track-wrap">
         <div class="slider-fill long" id="longFill"></div>
@@ -545,10 +579,10 @@ body {
   </div>
 
   <div class="preset-btns" id="presetBtns">
-    <button class="preset-btn" onclick="setPreset(5,20)">[5,20]</button>
-    <button class="preset-btn" onclick="setPreset(10,30)">[10,30]</button>
-    <button class="preset-btn" onclick="setPreset(20,60)">[20,60]</button>
-    <button class="preset-btn" onclick="setPreset(5,60)">[5,60]</button>
+    <button class="preset-btn" onclick="setPreset(5,20)">[5, 20]</button>
+    <button class="preset-btn" onclick="setPreset(10,30)">[10, 30]</button>
+    <button class="preset-btn" onclick="setPreset(20,60)">[20, 60]</button>
+    <button class="preset-btn" onclick="setPreset(5,60)">[5, 60]</button>
   </div>
 
   <div class="section-label">交易费用</div>
@@ -569,7 +603,6 @@ body {
 
   <button class="run-btn" onclick="runBacktest()">运行回测</button>
 
-  <!-- ===== Concept Card ===== -->
   <div class="concept-card" id="conceptCard">
     <div class="concept-header" onclick="toggleConcept(this)">
       <span>策略概念</span>
@@ -578,33 +611,26 @@ body {
     <div class="concept-body" id="conceptBody">
       <h4>双均线策略</h4>
       <p>同时计算两条不同周期的简单移动平均线（SMA），通过交叉关系判断趋势方向。</p>
-      <p class="hint">短期均线敏感捕捉动能变化，长期均线过滤噪音确定方向。</p>
-      <p class="hint">趋势策略，不预测未来，只跟随趋势。在单边趋势中表现优异，震荡市易生假信号。</p>
+      <p class="hint">短期均线捕捉动能变化，长期均线确定趋势方向。趋势策略，不预测只跟随。</p>
 
       <h4 class="buy">▲ 金叉 — 买入信号</h4>
-      <p>短期均线从<strong>下方</strong>上穿长期均线。</p>
-      <p class="hint">短期动能超过长期趋势，买盘增强 → 全仓买入。</p>
-      <p class="hint">前一日: 短 ≤ 长 ； 当日: 短 &gt; 长 → 触发买入</p>
+      <p>短期均线从<strong>下方</strong>上穿长期均线。短期动能超过长期趋势 → 全仓买入。</p>
 
       <h4 class="sell">▼ 死叉 — 卖出信号</h4>
-      <p>短期均线从<strong>上方</strong>下穿长期均线。</p>
-      <p class="hint">动能衰减、卖压增加，趋势可能反转 → 清仓离场。</p>
-      <p class="hint">前一日: 短 ≥ 长 ； 当日: 短 &lt; 长 → 触发卖出</p>
+      <p>短期均线从<strong>上方</strong>下穿长期均线。动能衰减 → 清仓离场。</p>
 
-      <div class="tip">提示：连续出现的同向信号（连买/连卖）会被忽略，避免频繁交易侵蚀利润。</div>
+      <div class="tip">连续同向信号被忽略，避免频繁交易侵蚀利润。</div>
 
-      <div style="margin-top:8px">
-        <div class="legend-item"><span class="legend-line" style="background:#888"></span><span>收盘价</span></div>
-        <div class="legend-item"><span class="legend-line" style="background:#3498db"></span><span>MA-Short (短期均线)</span></div>
-        <div class="legend-item"><span class="legend-line" style="background:#f39c12"></span><span>MA-Long (长期均线)</span></div>
-        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span><span>▲ 金叉买入点</span></div>
-        <div class="legend-item"><span class="legend-dot" style="background:#27ae60"></span><span>▼ 死叉卖出点</span></div>
+      <div style="margin-top:10px">
+        <div class="legend-item"><span class="legend-line" style="background:#4fc3f7"></span><span>MA-Short (短期均线)</span></div>
+        <div class="legend-item"><span class="legend-line" style="background:#ab47bc"></span><span>MA-Long (长期均线)</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#ef5350"></span><span>▲ 金叉买入</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#26a69a"></span><span>▼ 死叉卖出</span></div>
       </div>
     </div>
   </div>
 </aside>
 
-<!-- ===== Chart Area ===== -->
 <main class="chart-area">
   <div class="chart-box">
     <div class="chart-title">
@@ -639,48 +665,60 @@ body {
       <div class="name">总交易次数</div>
       <div class="value neu" id="mTrades">--</div>
     </div>
+  </div>
 
-    <div class="concept-explain">
-      <div class="explain-header">指标概念速查</div>
-      <div class="explain-body">
-        <div class="explain-item">
-          <div class="explain-title">累计回报</div>
-          <div class="explain-text">策略在整个回测期间的总收益率。计算公式： (最终资产 - 初始资金) / 初始资金。正值为盈利，负值为亏损。</div>
-        </div>
-        <div class="explain-item">
-          <div class="explain-title">年化收益</div>
-          <div class="explain-text">把总收益折算成"平均每年赚多少"，便于跨周期对比。公式： (1 + R)^(252/T) - 1，其中 252 为A股年交易日。</div>
-        </div>
-        <div class="explain-item">
-          <div class="explain-title">最大回撤 MDD</div>
-          <div class="explain-text">策略经历的最大连续亏损幅度。从峰值到谷值的最大跌幅。 &lt;10% 低风险、10-20% 中等、20-30% 高风险、&gt;30% 极高风险。</div>
-        </div>
-        <div class="explain-item">
-          <div class="explain-title">夏普比率</div>
-          <div class="explain-text">衡量每单位风险带来的超额收益。公式： (年化收益 - 无风险利率) / 年化波动率。 &lt;0 跑输无风险、0-1 一般、1-2 良好、&gt;2 优秀。</div>
-        </div>
-        <div class="explain-item">
-          <div class="explain-title">胜率</div>
-          <div class="explain-text">盈利交易次数占总交易次数的比例。胜率需结合盈亏比评估，高胜率不代表高收益。</div>
-        </div>
-        <div class="explain-item">
-          <div class="explain-title">总交易次数</div>
-          <div class="explain-text">完整买卖配对数量。同向信号被忽略。交易过于频繁时手续费会显著侵蚀利润。</div>
-        </div>
+  <div class="trade-log-section" id="tradeLogSection">
+    <h3>交易信号记录 <span class="count" id="tradeCount">0 笔交易</span></h3>
+    <div style="overflow-x: auto;">
+      <table class="trade-table" id="tradeTable">
+        <thead>
+          <tr>
+            <th>序号</th><th>类型</th><th>日期</th><th>价格</th><th>股数</th><th>金额</th><th>手续费</th><th>收益率</th><th>盈亏</th>
+          </tr>
+        </thead>
+        <tbody id="tradeBody">
+          <tr><td colspan="9" style="color:#999; padding:20px;">暂无交易记录</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept-explain">
+    <div class="explain-header">指标概念速查</div>
+    <div class="explain-body">
+      <div class="explain-item">
+        <div class="explain-title">累计回报</div>
+        <div class="explain-text">策略总收益率：(最终资产 - 初始资金) / 初始资金。正值为盈利，负值为亏损。不分时间长短，跨周期对比见年化收益。</div>
+      </div>
+      <div class="explain-item">
+        <div class="explain-title">年化收益</div>
+        <div class="explain-text">折合"平均每年赚多少"： (1 + R)^(252 / T) - 1。R = 累计回报，T = 交易日数。</div>
+      </div>
+      <div class="explain-item">
+        <div class="explain-title">最大回撤 MDD</div>
+        <div class="explain-text">最大连续亏损幅度，从峰值到谷值。&lt; 10% 低风险，10-20% 中等，20-30% 高，&gt; 30% 极高。</div>
+      </div>
+      <div class="explain-item">
+        <div class="explain-title">夏普比率</div>
+        <div class="explain-text">风险调整后收益：(年化收益 - 2.5%) / 年化波动率。&lt; 0 跑输无风险，&gt; 1 良好，&gt; 2 优秀。</div>
+      </div>
+      <div class="explain-item">
+        <div class="explain-title">胜率</div>
+        <div class="explain-text">盈利交易次数 / 总交易次数。需结合盈亏比评估，高胜率不等于高收益。</div>
+      </div>
+      <div class="explain-item">
+        <div class="explain-title">总交易次数</div>
+        <div class="explain-text">完整买卖配对数量。同向信号被忽略。交易频繁时手续费侵蚀利润，可切换万分之一费率对比。</div>
       </div>
     </div>
   </div>
 </main>
 
+</div>
+
 <script>
-/* =========================================================
-   数据占位符 — 构建脚本将替换此处
-   ========================================================= */
 const EMBEDDED_DATA = /* __DATA_GOES_HERE__ */ {};
 
-/* =========================================================
-   全局状态
-   ========================================================= */
 let currentStock = null;
 let currentData = [];
 let shortPeriod = 5;
@@ -688,26 +726,20 @@ let longPeriod = 20;
 let backtestResult = null;
 let debounceTimer = null;
 
-/* =========================================================
-   初始化
-   ========================================================= */
 function init() {
-  // 填充股票选择下拉
   const sel = document.getElementById('stockSelect');
   for (const code in EMBEDDED_DATA) {
     const info = EMBEDDED_DATA[code];
     const opt = document.createElement('option');
     opt.value = code;
-    opt.textContent = `${code} ${info.name}`;
+    opt.textContent = `${code}  ${info.name}`;
     sel.appendChild(opt);
   }
-  // 默认加载第一个
   const keys = Object.keys(EMBEDDED_DATA);
   if (keys.length > 0) {
     sel.value = keys[0];
     loadStock(keys[0]);
   }
-  // 更新滑块 fill
   updateSliderFill('short', shortPeriod, 3, 30);
   updateSliderFill('long', longPeriod, 10, 120);
 }
@@ -716,44 +748,30 @@ function loadStock(code) {
   if (!code || !EMBEDDED_DATA[code]) return;
   currentStock = code;
   const info = EMBEDDED_DATA[code];
-  // 解析数据
   currentData = info.data.split(';').map(s => {
     const [trade_date, open, high, low, close, vol] = s.split(',');
     return { trade_date, open: +open, high: +high, low: +low, close: +close, vol: +vol };
   });
-  // 更新顶部信息
   const dates = currentData.map(d => d.trade_date);
-  const start = dates[0], end = dates[dates.length - 1];
   document.getElementById('stockInfo').innerHTML =
-    `<span>${info.ts_code || code} ${info.name}</span><span>|</span><span>${start} ~ ${end}</span><span>|</span><span>${dates.length} 条</span>`;
-  // 运行回测
+    `<span>${info.ts_code || code}  ${info.name}</span><span>|</span><span>${dates[0]} ~ ${dates[dates.length-1]}</span><span>|</span><span>${dates.length} 条</span>`;
   runBacktest();
 }
 
-/* =========================================================
-   滑块交互
-   ========================================================= */
 function onSliderChange(type, val) {
   val = parseInt(val);
   if (type === 'short') { shortPeriod = val; document.getElementById('shortVal').textContent = val; }
   else { longPeriod = val; document.getElementById('longVal').textContent = val; }
   updateSliderFill(type, val, type === 'short' ? 3 : 10, type === 'short' ? 30 : 120);
-  // 更新 badge
   document.getElementById('chartBadge').textContent = `MA-${shortPeriod} / MA-${longPeriod}`;
-  // 防抖重绘
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => runBacktest(), 300);
+  debounceTimer = setTimeout(() => runBacktest(), 250);
 }
 
-function onSliderDone() {
-  clearTimeout(debounceTimer);
-  runBacktest();
-}
+function onSliderDone() { clearTimeout(debounceTimer); runBacktest(); }
 
 function updateSliderFill(type, val, min, max) {
-  const el = document.getElementById(type + 'Fill');
-  const pct = (val - min) / (max - min) * 100;
-  el.style.width = pct + '%';
+  document.getElementById(type + 'Fill').style.width = ((val - min) / (max - min) * 100) + '%';
 }
 
 function setPreset(s, l) {
@@ -765,22 +783,16 @@ function setPreset(s, l) {
   updateSliderFill('short', s, 3, 30);
   updateSliderFill('long', l, 10, 120);
   document.getElementById('chartBadge').textContent = `MA-${s} / MA-${l}`;
-  // 更新预设按钮状态
-  document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
   runBacktest();
 }
 
 function toggleConcept(header) {
-  const card = header.closest('.concept-card');
-  const body = card.querySelector('.concept-body');
+  const body = header.closest('.concept-card').querySelector('.concept-body');
   const arrow = header.querySelector('span:last-child');
   body.style.display = body.style.display === 'none' ? 'block' : 'none';
-  arrow.textContent = body.style.display === 'none' ? '▶' : '▼';
+  arrow.textContent = body.style.display === 'none' ? '▼' : '▲';
 }
 
-/* =========================================================
-   计算引擎
-   ========================================================= */
 function calcSMA(prices, period) {
   const result = new Array(prices.length).fill(null);
   let sum = 0;
@@ -797,11 +809,8 @@ function generateSignals(shortMA, longMA) {
   for (let i = 1; i < shortMA.length; i++) {
     if (shortMA[i] == null || longMA[i] == null) continue;
     if (shortMA[i-1] == null || longMA[i-1] == null) continue;
-    if (shortMA[i-1] <= longMA[i-1] && shortMA[i] > longMA[i]) {
-      signals[i] = 1;  // 买入
-    } else if (shortMA[i-1] >= longMA[i-1] && shortMA[i] < longMA[i]) {
-      signals[i] = -1; // 卖出
-    }
+    if (shortMA[i-1] <= longMA[i-1] && shortMA[i] > longMA[i]) signals[i] = 1;
+    else if (shortMA[i-1] >= longMA[i-1] && shortMA[i] < longMA[i]) signals[i] = -1;
   }
   return signals;
 }
@@ -816,27 +825,26 @@ function runBacktest() {
   const feeRate = parseFloat(document.querySelector('input[name="fee"]:checked').value);
   const initialCapital = parseFloat(document.getElementById('initialCapital').value) || 100000;
 
-  // 模拟交易
-  let cash = initialCapital;
-  let shares = 0;
-  let position = 0;
-  const equity = [];
-  const trades = [];
+  let cash = initialCapital, shares = 0, position = 0;
+  const equity = [], trades = [];
 
   for (let i = 0; i < prices.length; i++) {
     const price = prices[i];
-    // 卖出（先卖后买）
     if (signals[i] === -1 && position === 1) {
-      const sellAmount = shares * price * (1 - feeRate);
-      cash = sellAmount;
-      trades.push({ date: dates[i], type: 'SELL', price, shares, amount: sellAmount, fee: shares * price * feeRate, cash });
-      shares = 0; position = 0;
+      const sellAmt = shares * price * (1 - feeRate);
+      trades.push({
+        idx: trades.length + 1, date: dates[i], type: 'SELL', price, shares,
+        amount: sellAmt, fee: shares * price * feeRate, cash: sellAmt, capital: equity.length ? equity[equity.length-1] : initialCapital
+      });
+      cash = sellAmt; shares = 0; position = 0;
     }
-    // 买入
     if (signals[i] === 1 && position === 0) {
       shares = Math.floor(cash / (price * (1 + feeRate)));
       const cost = shares * price * (1 + feeRate);
-      trades.push({ date: dates[i], type: 'BUY', price, shares, amount: cost, fee: shares * price * feeRate, cash: cash - cost });
+      trades.push({
+        idx: trades.length + 1, date: dates[i], type: 'BUY', price, shares,
+        amount: cost, fee: shares * price * feeRate, cash: cash - cost, capital: cash
+      });
       cash = cash - cost; position = 1;
     }
     equity.push(cash + shares * price);
@@ -845,11 +853,9 @@ function runBacktest() {
   backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates, initialCapital, feeRate, ohlc: currentData };
   drawChart();
   updateMetrics();
+  updateTradeLog();
 }
 
-/* =========================================================
-   图表绘制
-   ========================================================= */
 function drawChart() {
   const { signals, shortMA, longMA, prices, dates, ohlc } = backtestResult;
   const buyIdx = [], buyY = [], buyText = [];
@@ -866,49 +872,43 @@ function drawChart() {
     }
   }
 
-  // K线数据
-  const opens = ohlc.map(d => d.open);
-  const highs = ohlc.map(d => d.high);
-  const lows = ohlc.map(d => d.low);
-  const closes = ohlc.map(d => d.close);
-
   const traces = [
-    { x: dates, open: opens, high: highs, low: lows, close: closes,
+    { x: dates, open: ohlc.map(d => d.open), high: ohlc.map(d => d.high), low: ohlc.map(d => d.low), close: ohlc.map(d => d.close),
       type: 'candlestick', name: 'K线',
       increasing: { line: { color: '#ef5350', width: 1 }, fillcolor: '#ef5350' },
       decreasing: { line: { color: '#26a69a', width: 1 }, fillcolor: '#26a69a' }
     },
     { x: dates, y: shortMA, type: 'scatter', mode: 'lines', name: `MA-${shortPeriod}`,
-      line: { color: '#4fc3f7', width: 2 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
+      line: { color: '#4fc3f7', width: 2.5 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
     { x: dates, y: longMA, type: 'scatter', mode: 'lines', name: `MA-${longPeriod}`,
-      line: { color: '#ab47bc', width: 2 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
+      line: { color: '#ab47bc', width: 2.5 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
     { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers+text', name: '金叉买入',
-      marker: { symbol: 'triangle-up', size: 16, color: '#ef5350', line: { width: 1.5, color: '#ff8a80' } },
+      marker: { symbol: 'triangle-up', size: 18, color: '#ef5350', line: { width: 2, color: '#ff8a80' } },
       text: buyIdx.length ? new Array(buyIdx.length).fill('金叉买入') : [], textposition: 'top center',
-      textfont: { size: 10, color: '#ef5350', family: 'Microsoft YaHei' },
+      textfont: { size: 11, color: '#ef5350', family: 'Microsoft YaHei' },
       hovertemplate: '%{text}<extra></extra>', hovertext: buyText },
     { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers+text', name: '死叉卖出',
-      marker: { symbol: 'triangle-down', size: 16, color: '#26a69a', line: { width: 1.5, color: '#69f0ae' } },
+      marker: { symbol: 'triangle-down', size: 18, color: '#26a69a', line: { width: 2, color: '#69f0ae' } },
       text: sellIdx.length ? new Array(sellIdx.length).fill('死叉卖出') : [], textposition: 'bottom center',
-      textfont: { size: 10, color: '#26a69a', family: 'Microsoft YaHei' },
+      textfont: { size: 11, color: '#26a69a', family: 'Microsoft YaHei' },
       hovertemplate: '%{text}<extra></extra>', hovertext: sellText }
   ];
 
   const layout = {
-    margin: { t: 40, l: 60, r: 30, b: 50 },
+    margin: { t: 45, l: 65, r: 35, b: 55 },
     plot_bgcolor: '#131722', paper_bgcolor: '#131722',
-    xaxis: { title: { text: '日期', font: { size: 12, color: '#d1d4dc' } },
-      gridcolor: '#2a2e39', tickangle: -45, tickfont: { size: 10, color: '#787b86' },
-      rangeslider: { visible: false }, showgrid: true, zeroline: false },
-    yaxis: { title: { text: '价格 (¥)', font: { size: 12, color: '#d1d4dc' } },
+    xaxis: { title: { text: '日期', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
-      showgrid: true, zeroline: false, tickprefix: '¥' },
-    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(19,23,34,0.85)', bordercolor: '#2a2e39', borderwidth: 1,
-      font: { size: 12, color: '#d1d4dc' } },
-    font: { family: 'Microsoft YaHei, PingFang SC, sans-serif', size: 12, color: '#d1d4dc' },
+      rangeslider: { visible: false }, showgrid: true, zeroline: false },
+    yaxis: { title: { text: '价格 (¥)', font: { size: 13, color: '#d1d4dc' } },
+      gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
+      showgrid: true, zeroline: false },
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(19,23,34,0.9)', bordercolor: '#2a2e39', borderwidth: 1,
+      font: { size: 13, color: '#d1d4dc' } },
+    font: { family: 'Microsoft YaHei, PingFang SC, sans-serif', size: 12 },
     hovermode: 'x unified',
     showlegend: true,
-    hoverlabel: { bgcolor: '#1e222d', font: { size: 12, color: '#d1d4dc' }, bordercolor: '#2a2e39' }
+    hoverlabel: { bgcolor: '#1e222d', font: { size: 13, color: '#d1d4dc' }, bordercolor: '#2a2e39' }
   };
 
   Plotly.newPlot('mainChart', traces, layout, { displayModeBar: false, responsive: true });
@@ -918,32 +918,21 @@ function exportChart() {
   Plotly.downloadImage('mainChart', { format: 'png', filename: `MA_Backtest_${currentStock || 'chart'}` });
 }
 
-/* =========================================================
-   指标计算与渲染
-   ========================================================= */
 function updateMetrics() {
   const { equity, trades, initialCapital } = backtestResult;
   const n = equity.length;
   if (n === 0) return;
 
-  // 累计回报
   const cumReturn = (equity[n - 1] - initialCapital) / initialCapital;
   setMetric('mCumReturn', (cumReturn * 100).toFixed(2) + '%', cumReturn >= 0 ? 'pos' : 'neg');
 
-  // 年化收益
   const annualReturn = Math.pow(1 + cumReturn, 252 / n) - 1;
   setMetric('mAnnual', (annualReturn * 100).toFixed(2) + '%', annualReturn >= 0 ? 'pos' : 'neg');
 
-  // 最大回撤
   let peak = equity[0], mdd = 0;
-  for (const v of equity) {
-    if (v > peak) peak = v;
-    const dd = (peak - v) / peak;
-    if (dd > mdd) mdd = dd;
-  }
+  for (const v of equity) { if (v > peak) peak = v; const dd = (peak - v) / peak; if (dd > mdd) mdd = dd; }
   setMetric('mMDD', '-' + (mdd * 100).toFixed(2) + '%', 'neg');
 
-  // 夏普比率
   const dailyReturns = [];
   for (let i = 1; i < n; i++) dailyReturns.push((equity[i] - equity[i-1]) / equity[i-1]);
   const avg = dailyReturns.reduce((a,b) => a+b, 0) / dailyReturns.length;
@@ -951,19 +940,13 @@ function updateMetrics() {
   const sharpe = (avg * 252 - 0.025) / (std * Math.sqrt(252));
   setMetric('mSharpe', isFinite(sharpe) ? sharpe.toFixed(2) : '--', 'info');
 
-  // 胜率 & 交易次数
-  const fullTrades = [];
-  let lastBuy = null;
+  let fullTrades = [], lastBuy = null;
   for (const t of trades) {
     if (t.type === 'BUY') lastBuy = t;
-    else if (t.type === 'SELL' && lastBuy) {
-      fullTrades.push({ buy: lastBuy, sell: t });
-      lastBuy = null;
-    }
+    else if (t.type === 'SELL' && lastBuy) { fullTrades.push({ buy: lastBuy, sell: t }); lastBuy = null; }
   }
-  const winCount = fullTrades.filter(t => t.sell.amount > t.buy.amount).length;
-  const winRate = fullTrades.length ? (winCount / fullTrades.length * 100) : 0;
-  setMetric('mWinRate', winRate.toFixed(1) + '%', 'neu');
+  const wins = fullTrades.filter(t => t.sell.amount > t.buy.amount).length;
+  setMetric('mWinRate', fullTrades.length ? (wins / fullTrades.length * 100).toFixed(1) + '%' : '--', 'neu');
   setMetric('mTrades', String(fullTrades.length), 'neu');
 }
 
@@ -973,9 +956,59 @@ function setMetric(id, text, cls) {
   el.className = 'value ' + cls;
 }
 
-/* =========================================================
-   启动
-   ========================================================= */
+function updateTradeLog() {
+  const { trades } = backtestResult;
+  const tbody = document.getElementById('tradeBody');
+  const countEl = document.getElementById('tradeCount');
+  if (!trades.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="color:#999; padding:20px;">暂无交易记录</td></tr>';
+    countEl.textContent = '0 笔交易';
+    return;
+  }
+
+  // 构建完整交易对
+  const pairs = [];
+  let lastBuy = null;
+  let seq = 0;
+  for (const t of trades) {
+    if (t.type === 'BUY') lastBuy = t;
+    else if (t.type === 'SELL' && lastBuy) {
+      seq++;
+      const profit = t.amount - lastBuy.amount;
+      const profitPct = (profit / lastBuy.amount * 100);
+      pairs.push({ seq, buy: lastBuy, sell: t, profit, profitPct });
+      lastBuy = null;
+    }
+  }
+
+  countEl.textContent = `${pairs.length} 笔交易`;
+
+  tbody.innerHTML = pairs.map(p => {
+    const profitClass = p.profit >= 0 ? 'pos' : 'neg';
+    const arrow = p.profit >= 0 ? '▲' : '▼';
+    let buyRow = `<tr class="buy-row">
+      <td rowspan="2">${p.seq}</td>
+      <td>${arrow} 金叉买入</td>
+      <td>${p.buy.date}</td>
+      <td>¥${p.buy.price.toFixed(2)}</td>
+      <td>${p.buy.shares.toLocaleString()}</td>
+      <td>¥${p.buy.amount.toFixed(0)}</td>
+      <td>¥${p.buy.fee.toFixed(2)}</td>
+      <td rowspan="2" class="profit ${profitClass}" style="font-size:16px">${p.profitPct.toFixed(2)}%</td>
+      <td rowspan="2" class="profit ${profitClass}" style="font-size:16px">¥${p.profit.toFixed(0)}</td>
+    </tr>`;
+    let sellRow = `<tr class="sell-row">
+      <td>▼ 死叉卖出</td>
+      <td>${p.sell.date}</td>
+      <td>¥${p.sell.price.toFixed(2)}</td>
+      <td>${p.sell.shares.toLocaleString()}</td>
+      <td>¥${p.sell.amount.toFixed(0)}</td>
+      <td>¥${p.sell.fee.toFixed(2)}</td>
+    </tr>`;
+    return buyRow + sellRow;
+  }).join('');
+}
+
 window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
