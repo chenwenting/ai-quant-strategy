@@ -754,10 +754,12 @@ function loadStock(code) {
   if (!code || !EMBEDDED_DATA[code]) return;
   currentStock = code;
   const info = EMBEDDED_DATA[code];
-    currentData = info.data.split(';').map(s => {
-      const [trade_date, open, high, low, close, vol] = s.split(',');
-      return { trade_date, open: +open, high: +high, low: +low, close: +close, vol: +vol };
-    });
+  currentData = info.data.split(';').map(s => {
+    const [trade_date, open, high, low, close, vol] = s.split(',');
+    const y = +trade_date.slice(0,4), m = +trade_date.slice(4,6) - 1, d = +trade_date.slice(6,8);
+    const dateObj = new Date(y, m, d);
+    return { trade_date, dateObj, open: +open, high: +high, low: +low, close: +close, vol: +vol };
+  });
   const dates = currentData.map(d => d.trade_date);
   document.getElementById('stockInfo').innerHTML =
     `<span>${info.ts_code || code}  ${info.name}</span><span>|</span><span>${dates[0]} ~ ${dates[dates.length-1]}</span><span>|</span><span>${dates.length} 条</span>`;
@@ -824,7 +826,7 @@ function generateSignals(shortMA, longMA) {
 function runBacktest() {
   if (!currentData.length) return;
   const prices = currentData.map(d => d.close);
-  const dates = currentData.map(d => d.trade_date);
+  const dateObjs = currentData.map(d => d.dateObj);
   const shortMA = calcSMA(prices, shortPeriod);
   const longMA = calcSMA(prices, longPeriod);
   const signals = generateSignals(shortMA, longMA);
@@ -839,7 +841,7 @@ function runBacktest() {
     if (signals[i] === -1 && position === 1) {
       const sellAmt = shares * price * (1 - feeRate);
       trades.push({
-        idx: trades.length + 1, date: dates[i], type: 'SELL', price, shares,
+        idx: trades.length + 1, date: currentData[i].trade_date, type: 'SELL', price, shares,
         amount: sellAmt, fee: shares * price * feeRate, cash: sellAmt, capital: equity.length ? equity[equity.length-1] : initialCapital
       });
       cash = sellAmt; shares = 0; position = 0;
@@ -848,7 +850,7 @@ function runBacktest() {
       shares = Math.floor(cash / (price * (1 + feeRate)));
       const cost = shares * price * (1 + feeRate);
       trades.push({
-        idx: trades.length + 1, date: dates[i], type: 'BUY', price, shares,
+        idx: trades.length + 1, date: currentData[i].trade_date, type: 'BUY', price, shares,
         amount: cost, fee: shares * price * feeRate, cash: cash - cost, capital: cash
       });
       cash = cash - cost; position = 1;
@@ -856,7 +858,7 @@ function runBacktest() {
     equity.push(cash + shares * price);
   }
 
-  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates, initialCapital, feeRate, ohlc: currentData };
+  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates: dateObjs, initialCapital, feeRate, ohlc: currentData };
   drawChart();
   updateMetrics();
   updateTradeLog();
@@ -870,13 +872,17 @@ function drawChart() {
     if (signals[i] === 1) {
       buyIdx.push(dates[i]);
       buyY.push(shortMA[i] || prices[i]);
-      buyText.push(`<b>金叉买入</b><br>日期: ${dates[i]}<br>价格: ¥${prices[i].toFixed(2)}<br>短均线上穿长均线`);
+      buyText.push(`<b>金叉买入</b><br>日期: ${ohlc[i].trade_date}<br>价格: ¥${prices[i].toFixed(2)}<br>短均线上穿长均线`);
     } else if (signals[i] === -1) {
       sellIdx.push(dates[i]);
       sellY.push(shortMA[i] || prices[i]);
-      sellText.push(`<b>死叉卖出</b><br>日期: ${dates[i]}<br>价格: ¥${prices[i].toFixed(2)}<br>短均线下穿长均线`);
+      sellText.push(`<b>死叉卖出</b><br>日期: ${ohlc[i].trade_date}<br>价格: ¥${prices[i].toFixed(2)}<br>短均线下穿长均线`);
     }
   }
+
+  const tickIndices = dates.map((_, i) => i).filter(i => i % 20 === 0);
+  const tickVals = tickIndices.map(i => dates[i]);
+  const tickText = tickIndices.map(i => ohlc[i].trade_date);
 
   const traces = [
     { x: dates, open: ohlc.map(d => d.open), high: ohlc.map(d => d.high), low: ohlc.map(d => d.low), close: ohlc.map(d => d.close),
@@ -905,7 +911,7 @@ function drawChart() {
     plot_bgcolor: '#131722', paper_bgcolor: '#131722',
     xaxis: { title: { text: '日期', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
-      tickmode: 'array', tickvals: dates.filter((d, i) => i % 20 === 0), tickangle: -45,
+      tickmode: 'array', tickvals: tickVals, ticktext: tickText, tickangle: -45,
       rangeslider: { visible: false }, showgrid: true, zeroline: false },
     yaxis: { title: { text: '价格 (¥)', font: { size: 13, color: '#d1d4dc' } },
       gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
