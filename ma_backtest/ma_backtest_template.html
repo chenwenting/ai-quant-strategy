@@ -842,7 +842,7 @@ function runBacktest() {
     equity.push(cash + shares * price);
   }
 
-  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates, initialCapital, feeRate };
+  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates, initialCapital, feeRate, ohlc: currentData };
   drawChart();
   updateMetrics();
 }
@@ -851,7 +851,7 @@ function runBacktest() {
    图表绘制
    ========================================================= */
 function drawChart() {
-  const { equity, signals, shortMA, longMA, prices, dates } = backtestResult;
+  const { signals, shortMA, longMA, prices, dates, ohlc } = backtestResult;
   const buyIdx = [], buyY = [], buyText = [];
   const sellIdx = [], sellY = [], sellText = [];
   for (let i = 0; i < signals.length; i++) {
@@ -866,37 +866,49 @@ function drawChart() {
     }
   }
 
+  // K线数据
+  const opens = ohlc.map(d => d.open);
+  const highs = ohlc.map(d => d.high);
+  const lows = ohlc.map(d => d.low);
+  const closes = ohlc.map(d => d.close);
+
   const traces = [
-    { x: dates, y: prices, type: 'scatter', mode: 'lines', name: '收盘价',
-      line: { color: '#555', width: 1.8 }, hovertemplate: '日期: %{x}<br>收盘: %{y:.2f}<extra></extra>' },
+    { x: dates, open: opens, high: highs, low: lows, close: closes,
+      type: 'candlestick', name: 'K线',
+      increasing: { line: { color: '#ef5350', width: 1 }, fillcolor: '#ef5350' },
+      decreasing: { line: { color: '#26a69a', width: 1 }, fillcolor: '#26a69a' }
+    },
     { x: dates, y: shortMA, type: 'scatter', mode: 'lines', name: `MA-${shortPeriod}`,
-      line: { color: '#3498db', width: 2 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
+      line: { color: '#4fc3f7', width: 2 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
     { x: dates, y: longMA, type: 'scatter', mode: 'lines', name: `MA-${longPeriod}`,
-      line: { color: '#f39c12', width: 2 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
+      line: { color: '#ab47bc', width: 2 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
     { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers+text', name: '金叉买入',
-      marker: { symbol: 'triangle-up', size: 16, color: '#e74c3c', line: { width: 1.5, color: '#c0392b' } },
+      marker: { symbol: 'triangle-up', size: 16, color: '#ef5350', line: { width: 1.5, color: '#ff8a80' } },
       text: buyIdx.length ? new Array(buyIdx.length).fill('金叉买入') : [], textposition: 'top center',
-      textfont: { size: 10, color: '#e74c3c', family: 'Microsoft YaHei' },
+      textfont: { size: 10, color: '#ef5350', family: 'Microsoft YaHei' },
       hovertemplate: '%{text}<extra></extra>', hovertext: buyText },
     { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers+text', name: '死叉卖出',
-      marker: { symbol: 'triangle-down', size: 16, color: '#27ae60', line: { width: 1.5, color: '#1e8449' } },
+      marker: { symbol: 'triangle-down', size: 16, color: '#26a69a', line: { width: 1.5, color: '#69f0ae' } },
       text: sellIdx.length ? new Array(sellIdx.length).fill('死叉卖出') : [], textposition: 'bottom center',
-      textfont: { size: 10, color: '#27ae60', family: 'Microsoft YaHei' },
+      textfont: { size: 10, color: '#26a69a', family: 'Microsoft YaHei' },
       hovertemplate: '%{text}<extra></extra>', hovertext: sellText }
   ];
 
   const layout = {
     margin: { t: 40, l: 60, r: 30, b: 50 },
-    plot_bgcolor: '#fff', paper_bgcolor: '#fff',
-    xaxis: { title: { text: '日期', font: { size: 12 } }, gridcolor: '#f0f0f0', tickangle: -45, tickfont: { size: 10 },
+    plot_bgcolor: '#131722', paper_bgcolor: '#131722',
+    xaxis: { title: { text: '日期', font: { size: 12, color: '#d1d4dc' } },
+      gridcolor: '#2a2e39', tickangle: -45, tickfont: { size: 10, color: '#787b86' },
       rangeslider: { visible: false }, showgrid: true, zeroline: false },
-    yaxis: { title: { text: '价格 (¥)', font: { size: 12 } }, gridcolor: '#f0f0f0', tickfont: { size: 11 },
+    yaxis: { title: { text: '价格 (¥)', font: { size: 12, color: '#d1d4dc' } },
+      gridcolor: '#2a2e39', tickfont: { size: 11, color: '#787b86' },
       showgrid: true, zeroline: false, tickprefix: '¥' },
-    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.9)', bordercolor: '#ddd', borderwidth: 1, font: { size: 12 } },
-    font: { family: 'Microsoft YaHei, PingFang SC, sans-serif', size: 12 },
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(19,23,34,0.85)', bordercolor: '#2a2e39', borderwidth: 1,
+      font: { size: 12, color: '#d1d4dc' } },
+    font: { family: 'Microsoft YaHei, PingFang SC, sans-serif', size: 12, color: '#d1d4dc' },
     hovermode: 'x unified',
     showlegend: true,
-    hoverlabel: { bgcolor: '#fff', font: { size: 12, color: '#333' } }
+    hoverlabel: { bgcolor: '#1e222d', font: { size: 12, color: '#d1d4dc' }, bordercolor: '#2a2e39' }
   };
 
   Plotly.newPlot('mainChart', traces, layout, { displayModeBar: false, responsive: true });
