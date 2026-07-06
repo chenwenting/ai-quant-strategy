@@ -28,7 +28,6 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 /* ===== Top Nav ===== */
@@ -379,7 +378,7 @@ body {
   flex: 1;
   min-height: 0;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
 }
 
@@ -390,13 +389,11 @@ body {
   border-top: 1px solid var(--border-color);
   display: flex;
   gap: 10px;
-  overflow-x: auto;
-  overflow-y: visible;
+  flex-wrap: wrap;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
-.metrics-panel::-webkit-scrollbar { height: 4px; }
-.metrics-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
-
 .metric-card {
   min-width: 120px;
   background: #fff;
@@ -444,24 +441,20 @@ body {
   position: relative;
 }
 .tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
   background: #1a1a2e;
   color: #fff;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 12px;
   line-height: 1.6;
-  width: 280px;
-  white-space: pre-wrap;
-  z-index: 1000;
+  width: 300px;
+  z-index: 99999;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s;
-  margin-bottom: 6px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  transition: opacity 0.15s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  display: none;
 }
 .tooltip::after {
   content: "";
@@ -469,10 +462,10 @@ body {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 5px solid transparent;
+  border: 6px solid transparent;
   border-top-color: #1a1a2e;
 }
-.tooltip-wrap:hover .tooltip { opacity: 1; }
+.tooltip-wrap:hover .tooltip { opacity: 1; display: block; }
 .tooltip h4 {
   font-size: 13px;
   font-weight: 600;
@@ -480,16 +473,16 @@ body {
   margin-bottom: 6px;
 }
 .tooltip .formula {
-  background: rgba(255,255,255,0.1);
-  border-radius: 4px;
-  padding: 4px 8px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 5px;
+  padding: 5px 8px;
   font-family: "SF Mono", "Courier New", monospace;
   font-size: 11px;
-  color: #a0d2ff;
-  margin: 4px 0;
+  color: #85B7EB;
+  margin: 5px 0;
 }
-.tooltip .guide { color: #a0d2ff; font-size: 11px; margin-top: 6px; }
-.tooltip .tip-text { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 4px; }
+.tooltip .guide { color: #85f5a0; font-size: 11px; margin-top: 6px; }
+.tooltip .tip-text { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 5px; }
 </style>
 </head>
 <body>
@@ -857,28 +850,35 @@ function drawChart() {
 
   const traces = [
     { x: dates, y: prices, type: 'scatter', mode: 'lines', name: '收盘价',
-      line: { color: '#888', width: 1.2 }, hovertemplate: '日期: %{x}<br>收盘: %{y:.2f}<extra></extra>' },
+      line: { color: '#555', width: 1.8 }, hovertemplate: '日期: %{x}<br>收盘: %{y:.2f}<extra></extra>' },
     { x: dates, y: shortMA, type: 'scatter', mode: 'lines', name: `MA-${shortPeriod}`,
-      line: { color: '#3498db', width: 1.5 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
+      line: { color: '#3498db', width: 2 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
     { x: dates, y: longMA, type: 'scatter', mode: 'lines', name: `MA-${longPeriod}`,
-      line: { color: '#f39c12', width: 1.5 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
-    { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers', name: '买入▲',
-      marker: { symbol: 'triangle-up', size: 12, color: '#e74c3c', line: { width: 0 } },
-      hovertemplate: '%{text}<extra></extra>', text: buyText },
-    { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers', name: '卖出▼',
-      marker: { symbol: 'triangle-down', size: 12, color: '#27ae60', line: { width: 0 } },
-      hovertemplate: '%{text}<extra></extra>', text: sellText }
+      line: { color: '#f39c12', width: 2 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
+    { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers+text', name: '买入',
+      marker: { symbol: 'triangle-up', size: 14, color: '#e74c3c', line: { width: 1, color: '#c0392b' } },
+      text: buyIdx.length ? new Array(buyIdx.length).fill('买') : [], textposition: 'top center',
+      textfont: { size: 11, color: '#e74c3c', family: 'Microsoft YaHei' },
+      hovertemplate: '%{text}<extra></extra>', hovertext: buyText },
+    { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers+text', name: '卖出',
+      marker: { symbol: 'triangle-down', size: 14, color: '#27ae60', line: { width: 1, color: '#1e8449' } },
+      text: sellIdx.length ? new Array(sellIdx.length).fill('卖') : [], textposition: 'bottom center',
+      textfont: { size: 11, color: '#27ae60', family: 'Microsoft YaHei' },
+      hovertemplate: '%{text}<extra></extra>', hovertext: sellText }
   ];
 
   const layout = {
-    margin: { t: 30, l: 50, r: 20, b: 40 },
+    margin: { t: 40, l: 60, r: 30, b: 50 },
     plot_bgcolor: '#fff', paper_bgcolor: '#fff',
-    xaxis: { title: { text: '日期', font: { size: 11 } }, gridcolor: '#f0f0f0', tickangle: -45, tickfont: { size: 10 } },
-    yaxis: { title: { text: '价格', font: { size: 11 } }, gridcolor: '#f0f0f0', tickfont: { size: 10 } },
-    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#eee', borderwidth: 1, font: { size: 11 } },
-    font: { family: 'Microsoft YaHei, sans-serif', size: 12 },
+    xaxis: { title: { text: '日期', font: { size: 12 } }, gridcolor: '#f0f0f0', tickangle: -45, tickfont: { size: 10 },
+      rangeslider: { visible: false }, showgrid: true, zeroline: false },
+    yaxis: { title: { text: '价格 (¥)', font: { size: 12 } }, gridcolor: '#f0f0f0', tickfont: { size: 11 },
+      showgrid: true, zeroline: false, tickprefix: '¥' },
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.9)', bordercolor: '#ddd', borderwidth: 1, font: { size: 12 } },
+    font: { family: 'Microsoft YaHei, PingFang SC, sans-serif', size: 12 },
     hovermode: 'x unified',
-    showlegend: true
+    showlegend: true,
+    hoverlabel: { bgcolor: '#fff', font: { size: 12, color: '#333' } }
   };
 
   Plotly.newPlot('mainChart', traces, layout, { displayModeBar: false, responsive: true });
@@ -946,7 +946,27 @@ function setMetric(id, text, cls) {
 /* =========================================================
    启动
    ========================================================= */
-window.addEventListener('DOMContentLoaded', init);
+function setupTooltips() {
+  document.querySelectorAll('.tooltip-wrap').forEach(wrap => {
+    wrap.addEventListener('mouseenter', function() {
+      const tooltip = this.querySelector('.tooltip');
+      if (!tooltip) return;
+      const iconRect = this.querySelector('.help-icon').getBoundingClientRect();
+      const tooltipH = tooltip.offsetHeight || 200;
+      let top = iconRect.top - tooltipH - 10;
+      let left = iconRect.left + iconRect.width / 2 - 150;
+      if (top < 10) top = iconRect.bottom + 10;
+      if (left < 10) left = 10;
+      if (left + 300 > window.innerWidth - 10) left = window.innerWidth - 310;
+      tooltip.style.top = top + 'px';
+      tooltip.style.left = left + 'px';
+      const arrow = tooltip.querySelector('::after');
+      tooltip.style.setProperty('--arrow-top', top <= iconRect.top ? 'bottom' : 'top');
+    });
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => { init(); setTimeout(setupTooltips, 200); });
 </script>
 </body>
 </html>
