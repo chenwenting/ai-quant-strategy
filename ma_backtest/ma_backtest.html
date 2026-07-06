@@ -595,6 +595,34 @@ body {
     </div>
   </div>
 
+  <div class="section-label">滑点成本</div>
+  <div class="fee-row">
+    <div class="fee-toggle">
+      <input type="radio" name="slippage" id="slip0" value="0" checked onchange="runBacktest()">
+      <label for="slip0">无</label>
+      <input type="radio" name="slippage" id="slip01" value="0.0001" onchange="runBacktest()">
+      <label for="slip01">万分之一</label>
+      <input type="radio" name="slippage" id="slip02" value="0.0002" onchange="runBacktest()">
+      <label for="slip02">万分之二</label>
+      <input type="radio" name="slippage" id="slip05" value="0.0005" onchange="runBacktest()">
+      <label for="slip05">万分之五</label>
+    </div>
+  </div>
+
+  <div class="section-label">仓位比例</div>
+  <div class="fee-row">
+    <div class="fee-toggle">
+      <input type="radio" name="position" id="posFull" value="1" checked onchange="runBacktest()">
+      <label for="posFull">全仓</label>
+      <input type="radio" name="position" id="posHalf" value="0.5" onchange="runBacktest()">
+      <label for="posHalf">半仓</label>
+      <input type="radio" name="position" id="posThird" value="0.333" onchange="runBacktest()">
+      <label for="posThird">1/3仓</label>
+      <input type="radio" name="position" id="posQuarter" value="0.25" onchange="runBacktest()">
+      <label for="posQuarter">1/4仓</label>
+    </div>
+  </div>
+
   <div class="section-label">初始资金</div>
   <div class="capital-row">
     <label>¥</label>
@@ -614,12 +642,12 @@ body {
       <p class="hint">短期均线捕捉动能变化，长期均线确定趋势方向。趋势策略，不预测只跟随。</p>
 
       <h4 class="buy">▲ 金叉 — 买入信号</h4>
-      <p>短期均线从<strong>下方</strong>上穿长期均线。短期动能超过长期趋势 → 全仓买入。</p>
+      <p>短期均线从<strong>下方</strong>上穿长期均线。短期动能超过长期趋势 → 买入建仓。</p>
 
       <h4 class="sell">▼ 死叉 — 卖出信号</h4>
       <p>短期均线从<strong>上方</strong>下穿长期均线。动能衰减 → 清仓离场。</p>
 
-      <div class="tip">连续同向信号被忽略，避免频繁交易侵蚀利润。</div>
+      <div class="tip">连续同向信号被忽略，避免频繁交易侵蚀利润。可调仓位比例（全仓/半仓/1/3仓）控制风险。</div>
 
       <div style="margin-top:10px">
         <div class="legend-item"><span class="legend-line" style="background:#4fc3f7"></span><span>MA-Short (短期均线)</span></div>
@@ -830,6 +858,8 @@ function runBacktest() {
   const longMA = calcSMA(prices, longPeriod);
   const signals = generateSignals(shortMA, longMA);
   const feeRate = parseFloat(document.querySelector('input[name="fee"]:checked').value);
+  const slippageRate = parseFloat(document.querySelector('input[name="slippage"]:checked').value);
+  const positionRatio = parseFloat(document.querySelector('input[name="position"]:checked').value);
   const initialCapital = parseFloat(document.getElementById('initialCapital').value) || 100000;
 
   let cash = initialCapital, shares = 0, position = 0;
@@ -838,26 +868,31 @@ function runBacktest() {
   for (let i = 0; i < prices.length; i++) {
     const price = prices[i];
     if (signals[i] === -1 && position === 1) {
-      const sellAmt = shares * price * (1 - feeRate);
+      const sellPrice = price * (1 - slippageRate);
+      const sellAmt = shares * sellPrice * (1 - feeRate);
+      const sellFee = shares * sellPrice * feeRate;
       trades.push({
-        idx: trades.length + 1, date: currentData[i].trade_date, type: 'SELL', price, shares,
-        amount: sellAmt, fee: shares * price * feeRate, cash: sellAmt, capital: equity.length ? equity[equity.length-1] : initialCapital
+        idx: trades.length + 1, date: currentData[i].trade_date, type: 'SELL', price: sellPrice, shares,
+        amount: sellAmt, fee: sellFee, cash: sellAmt, capital: equity.length ? equity[equity.length-1] : initialCapital
       });
       cash = sellAmt; shares = 0; position = 0;
     }
     if (signals[i] === 1 && position === 0) {
-      shares = Math.floor(cash / (price * (1 + feeRate)));
-      const cost = shares * price * (1 + feeRate);
+      const buyPrice = price * (1 + slippageRate);
+      const availableCash = cash * positionRatio;
+      shares = Math.floor(availableCash / (buyPrice * (1 + feeRate)));
+      const cost = shares * buyPrice * (1 + feeRate);
+      const buyFee = shares * buyPrice * feeRate;
       trades.push({
-        idx: trades.length + 1, date: currentData[i].trade_date, type: 'BUY', price, shares,
-        amount: cost, fee: shares * price * feeRate, cash: cash - cost, capital: cash
+        idx: trades.length + 1, date: currentData[i].trade_date, type: 'BUY', price: buyPrice, shares,
+        amount: cost, fee: buyFee, cash: cash - cost, capital: cash
       });
       cash = cash - cost; position = 1;
     }
     equity.push(cash + shares * price);
   }
 
-  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates: dateObjs, initialCapital, feeRate, ohlc: currentData };
+  backtestResult = { equity, trades, signals, shortMA, longMA, prices, dates: dateObjs, initialCapital, feeRate, slippageRate, positionRatio, ohlc: currentData };
   drawChart();
   updateMetrics();
   updateTradeLog();
