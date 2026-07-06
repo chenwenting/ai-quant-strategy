@@ -883,7 +883,7 @@ function runBacktest() {
         idx: trades.length + 1, date: currentData[i].trade_date, type: 'SELL', price: sellPrice, shares,
         amount: sellAmt, fee: sellFee, cash: sellAmt, capital: equity.length ? equity[equity.length-1] : initialCapital
       });
-      cash = sellAmt; shares = 0; position = 0;
+      cash += sellAmt; shares = 0; position = 0;
     }
     if (signals[i] === 1 && position === 0) {
       const buyPrice = price * (1 + slippageRate);
