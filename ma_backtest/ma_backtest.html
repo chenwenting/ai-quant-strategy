@@ -693,6 +693,10 @@ body {
       <div class="name">总交易次数</div>
       <div class="value neu" id="mTrades">--</div>
     </div>
+    <div class="metric-card">
+      <div class="name">盈亏比</div>
+      <div class="value info" id="mProfitFactor">--</div>
+    </div>
   </div>
 
   <div class="trade-log-section" id="tradeLogSection">
@@ -737,6 +741,10 @@ body {
       <div class="explain-item">
         <div class="explain-title">总交易次数</div>
         <div class="explain-text">完整买卖配对数量。同向信号被忽略。交易频繁时手续费侵蚀利润，可切换万分之一费率对比。</div>
+      </div>
+      <div class="explain-item">
+        <div class="explain-title">盈亏比</div>
+        <div class="explain-text">总盈利金额 / 总亏损金额。> 1 策略整体盈利，< 1 策略亏损，> 2 为优秀。回撤大时需结合MDD判断。</div>
       </div>
     </div>
   </div>
@@ -995,6 +1003,16 @@ function updateMetrics() {
   const wins = fullTrades.filter(t => t.sell.amount > t.buy.amount).length;
   setMetric('mWinRate', fullTrades.length ? (wins / fullTrades.length * 100).toFixed(1) + '%' : '--', 'neu');
   setMetric('mTrades', String(fullTrades.length), 'neu');
+
+  // 盈亏比 = 总盈利 / |总亏损|
+  let totalProfit = 0, totalLoss = 0;
+  for (const t of fullTrades) {
+    const pnl = t.sell.amount - t.buy.amount;
+    if (pnl > 0) totalProfit += pnl;
+    else totalLoss += Math.abs(pnl);
+  }
+  const profitFactor = totalLoss > 0 ? totalProfit / totalLoss : 0;
+  setMetric('mProfitFactor', profitFactor > 0 ? profitFactor.toFixed(2) : '--', profitFactor >= 1.5 ? 'pos' : 'info');
 }
 
 function setMetric(id, text, cls) {
