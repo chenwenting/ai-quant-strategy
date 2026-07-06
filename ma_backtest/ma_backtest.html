@@ -756,8 +756,7 @@ function loadStock(code) {
   const info = EMBEDDED_DATA[code];
     currentData = info.data.split(';').map(s => {
       const [trade_date, open, high, low, close, vol] = s.split(',');
-      const fmtDate = trade_date.slice(0,4) + '-' + trade_date.slice(4,6) + '-' + trade_date.slice(6,8);
-      return { trade_date: fmtDate, open: +open, high: +high, low: +low, close: +close, vol: +vol };
+      return { trade_date, open: +open, high: +high, low: +low, close: +close, vol: +vol };
     });
   const dates = currentData.map(d => d.trade_date);
   document.getElementById('stockInfo').innerHTML =
