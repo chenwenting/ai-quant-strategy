@@ -2,7 +2,6 @@
 .venv/
 __pycache__/
 *.pyc
-*.pyo
 
 # IDE
 .vscode/
@@ -12,22 +11,8 @@ __pycache__/
 .workbuddy/
 plans/
 
-# Temp/build files
-task02_indicator_lab/build_tool.py
-task02_indicator_lab/generate_notebook.py
-
-# Old data files
-data/三一重工行情数据.csv
-data/平安集团行情数据.csv
-
-# Test
-test.txt
-
-# Generated reports (keep for deployment)
-# reports/ — already committed, keep
-
-# Data raw cache
-data/raw/
+# Temp
+deploy/
 
 # OS
 .DS_Store
