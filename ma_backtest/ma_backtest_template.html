@@ -438,53 +438,60 @@ body {
 .metric-card .value.neu { color: var(--text-primary); }
 .metric-card .value.info { color: var(--color-ma-short); }
 
-/* Tooltip */
-.tooltip-wrap {
-  position: relative;
+/* ===== Concept Explain Card ===== */
+.concept-explain {
+  grid-column: 1 / -1;
+  background: #E6F1FB;
+  border: 1px solid #85B7EB;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 4px;
 }
-.tooltip {
-  position: fixed;
-  background: #1a1a2e;
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 12px;
-  line-height: 1.6;
-  width: 300px;
-  z-index: 99999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-  display: none;
-}
-.tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: #1a1a2e;
-}
-.tooltip-wrap:hover .tooltip { opacity: 1; display: block; }
-.tooltip h4 {
-  font-size: 13px;
+.concept-explain .explain-header {
+  font-size: 14px;
   font-weight: 600;
-  color: #fff;
-  margin-bottom: 6px;
+  color: #185FA5;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #b5d4f4;
 }
-.tooltip .formula {
-  background: rgba(255,255,255,0.12);
-  border-radius: 5px;
-  padding: 5px 8px;
-  font-family: "SF Mono", "Courier New", monospace;
+.concept-explain .explain-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 16px;
+}
+.concept-explain .explain-item {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid #3498db;
+}
+.concept-explain .explain-item:nth-child(3),
+.concept-explain .explain-item:nth-child(4) {
+  border-left-color: #f39c12;
+}
+.concept-explain .explain-item:nth-child(5),
+.concept-explain .explain-item:nth-child(6) {
+  border-left-color: #27ae60;
+}
+.concept-explain .explain-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.concept-explain .explain-text {
   font-size: 11px;
-  color: #85B7EB;
-  margin: 5px 0;
+  color: #6c757d;
+  line-height: 1.5;
 }
-.tooltip .guide { color: #85f5a0; font-size: 11px; margin-top: 6px; }
-.tooltip .tip-text { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 5px; }
+
+@media (max-width: 1200px) {
+  .concept-explain .explain-body { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .concept-explain .explain-body { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -609,75 +616,61 @@ body {
 
   <div class="metrics-panel" id="metricsPanel">
     <div class="metric-card">
-      <div class="name tooltip-wrap">累计回报
-        <span class="help-icon">?</span>
-        <div class="tooltip"><h4>累计回报 (Cumulative Return)</h4>策略在整个回测期间的总收益率，衡量"总共赚了多少"。<div class="formula">(最终资产 - 初始资金) / 初始资金</div><div class="tip-text">> 0% 盈利；< 0% 亏损。不分时间长短，跨周期对比请看年化收益。</div></div>
-      </div>
+      <div class="name">累计回报</div>
       <div class="value neu" id="mCumReturn">--</div>
     </div>
     <div class="metric-card">
-      <div class="name tooltip-wrap">年化收益
-        <span class="help-icon">?</span>
-        <div class="tooltip"><h4>年化收益率 (Annualized Return)</h4>把总收益率折算成"平均每年赚多少"，消除回测周期不同带来的不可比性。<div class="formula">(1 + R)^(252 / T) - 1</div><div class="tip-text">R = 累计回报；T = 回测交易日数；252 = A股年交易日</div></div>
-      </div>
+      <div class="name">年化收益</div>
       <div class="value neu" id="mAnnual">--</div>
     </div>
     <div class="metric-card">
-      <div class="name tooltip-wrap">最大回撤 MDD
-        <span class="help-icon">?</span>
-        <div class="tooltip"><h4>最大回撤 (Maximum Drawdown)</h4>策略在回测期间经历的最大连续亏损幅度，衡量"最坏情况下会亏多少"。<div class="formula">max( (峰值 - 谷值) / 峰值 )</div><div class="guide">< 10% 低风险 | 10%-20% 中等 | 20%-30% 高风险 | > 30% 极高</div><div class="tip-text">这不是一次交易亏损，而是资产曲线从最高点到最低点的总跌幅。</div></div>
-      </div>
+      <div class="name">最大回撤 MDD</div>
       <div class="value neg" id="mMDD">--</div>
     </div>
     <div class="metric-card">
-      <div class="name tooltip-wrap">夏普比率
-        <span class="help-icon">?</span>
-        <div class="tooltip"><h4>夏普比率 (Sharpe Ratio)</h4>衡量"每承担一单位风险，能换来多少超额收益"。<div class="formula">(年化收益 - 无风险利率) / 年化波动率</div><div class="guide">< 0 跑输无风险 | 0-1 一般 | 1-2 良好 | > 2 优秀</div><div class="tip-text">无风险利率默认 2.5%（参考中国10年期国债）。高夏普代表风险调整后收益优秀。</div></div>
-      </div>
+      <div class="name">夏普比率</div>
       <div class="value info" id="mSharpe">--</div>
     </div>
     <div class="metric-card">
-      <div class="name tooltip-wrap">胜率
-        <span class="help-icon">?</span>
-        <div class="tooltip"><h4>胜率 (Win Rate)</h4>盈利交易次数占总交易次数的比例，衡量"下单有多准"。<div class="formula">盈利交易 / 总交易次数</div><div class="tip-text">高胜率不等于高收益。胜率需结合盈亏比综合评估。</div></div>
-      </div>
+      <div class="name">胜率</div>
       <div class="value neu" id="mWinRate">--</div>
     </div>
     <div class="metric-card">
-      <div class="name tooltip-wrap">总交易次数
-        <span class="help-icon">?</span>
-        <div class="tooltip"><h4>总交易次数</h4>回测期间完成的完整买卖配对数量。<div class="tip-text">一次完整交易 = 买入 + 卖出。同向信号被忽略。交易过于频繁时手续费会显著侵蚀利润。</div></div>
-      </div>
+      <div class="name">总交易次数</div>
       <div class="value neu" id="mTrades">--</div>
+    </div>
+
+    <div class="concept-explain">
+      <div class="explain-header">指标概念速查</div>
+      <div class="explain-body">
+        <div class="explain-item">
+          <div class="explain-title">累计回报</div>
+          <div class="explain-text">策略在整个回测期间的总收益率。计算公式： (最终资产 - 初始资金) / 初始资金。正值为盈利，负值为亏损。</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-title">年化收益</div>
+          <div class="explain-text">把总收益折算成"平均每年赚多少"，便于跨周期对比。公式： (1 + R)^(252/T) - 1，其中 252 为A股年交易日。</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-title">最大回撤 MDD</div>
+          <div class="explain-text">策略经历的最大连续亏损幅度。从峰值到谷值的最大跌幅。 &lt;10% 低风险、10-20% 中等、20-30% 高风险、&gt;30% 极高风险。</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-title">夏普比率</div>
+          <div class="explain-text">衡量每单位风险带来的超额收益。公式： (年化收益 - 无风险利率) / 年化波动率。 &lt;0 跑输无风险、0-1 一般、1-2 良好、&gt;2 优秀。</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-title">胜率</div>
+          <div class="explain-text">盈利交易次数占总交易次数的比例。胜率需结合盈亏比评估，高胜率不代表高收益。</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-title">总交易次数</div>
+          <div class="explain-text">完整买卖配对数量。同向信号被忽略。交易过于频繁时手续费会显著侵蚀利润。</div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
-      <div class="tooltip"><h4>最大回撤 (Maximum Drawdown)</h4>策略在回测期间经历的最大连续亏损幅度，衡量"最坏情况下会亏多少"。<div class="formula">max( (峰值 - 谷值) / 峰值 )</div><div class="guide">&lt; 10% 低风险 | 10%-20% 中等 | 20%-30% 高风险 | &gt; 30% 极高</div><div class="tip-text">这不是一次交易亏损，而是资产曲线从最高点到最低点的总跌幅。</div></div>
-    </div>
-    <div class="value neg" id="mMDD">--</div>
-  </div>
-  <div class="metric-card">
-    <div class="name tooltip-wrap">夏普比率
-      <span class="help-icon">?</span>
-      <div class="tooltip"><h4>夏普比率 (Sharpe Ratio)</h4>衡量"每承担一单位风险，能换来多少超额收益"。<div class="formula">(年化收益 - 无风险利率) / 年化波动率</div><div class="guide">&lt; 0 跑输无风险 | 0-1 一般 | 1-2 良好 | &gt; 2 优秀</div><div class="tip-text">无风险利率默认 2.5%（参考中国10年期国债）。高夏普代表风险调整后收益优秀。</div></div>
-    </div>
-    <div class="value info" id="mSharpe">--</div>
-  </div>
-  <div class="metric-card">
-    <div class="name tooltip-wrap">胜率
-      <span class="help-icon">?</span>
-      <div class="tooltip"><h4>胜率 (Win Rate)</h4>盈利交易次数占总交易次数的比例，衡量"下单有多准"。<div class="formula">盈利交易 / 总交易次数</div><div class="tip-text">高胜率不等于高收益。胜率需结合盈亏比综合评估。</div></div>
-    </div>
-    <div class="value neu" id="mWinRate">--</div>
-  </div>
-  <div class="metric-card">
-    <div class="name tooltip-wrap">总交易次数
-      <span class="help-icon">?</span>
-      <div class="tooltip"><h4>总交易次数</h4>回测期间完成的完整买卖配对数量。<div class="tip-text">一次完整交易 = 买入 + 卖出。同向信号被忽略。交易过于频繁时手续费会显著侵蚀利润。</div></div>
-    </div>
-    <div class="value neu" id="mTrades">--</div>
-  </div>
-</div>
 
 <script>
 /* =========================================================
@@ -971,27 +964,7 @@ function setMetric(id, text, cls) {
 /* =========================================================
    启动
    ========================================================= */
-function setupTooltips() {
-  document.querySelectorAll('.tooltip-wrap').forEach(wrap => {
-    wrap.addEventListener('mouseenter', function() {
-      const tooltip = this.querySelector('.tooltip');
-      if (!tooltip) return;
-      const iconRect = this.querySelector('.help-icon').getBoundingClientRect();
-      const tooltipH = tooltip.offsetHeight || 200;
-      let top = iconRect.top - tooltipH - 10;
-      let left = iconRect.left + iconRect.width / 2 - 150;
-      if (top < 10) top = iconRect.bottom + 10;
-      if (left < 10) left = 10;
-      if (left + 300 > window.innerWidth - 10) left = window.innerWidth - 310;
-      tooltip.style.top = top + 'px';
-      tooltip.style.left = left + 'px';
-      const arrow = tooltip.querySelector('::after');
-      tooltip.style.setProperty('--arrow-top', top <= iconRect.top ? 'bottom' : 'top');
-    });
-  });
-}
-
-window.addEventListener('DOMContentLoaded', () => { init(); setTimeout(setupTooltips, 200); });
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
