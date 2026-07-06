@@ -347,7 +347,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
   background: var(--bg-primary);
 }
 .chart-box {
@@ -355,7 +355,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 12px 16px 0;
-  overflow: hidden;
+  min-height: 0;
 }
 .chart-box .chart-title {
   font-size: 13px;
@@ -384,31 +384,33 @@ body {
 
 /* ===== Metrics Panel ===== */
 .metrics-panel {
-  padding: 12px 16px;
+  flex: 1;
+  padding: 12px 16px 12px;
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
+  align-content: start;
+  overflow-y: auto;
+  min-height: 0;
 }
+.metrics-panel::-webkit-scrollbar { width: 4px; }
+.metrics-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
 .metric-card {
-  min-width: 120px;
   background: #fff;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 14px 16px;
   position: relative;
   cursor: default;
   transition: box-shadow 0.2s;
 }
 .metric-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .metric-card .name {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -427,7 +429,7 @@ body {
   margin-left: 4px;
 }
 .metric-card .value {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
   font-family: "SF Mono", "Courier New", monospace;
 }
@@ -604,29 +606,52 @@ body {
     </div>
     <div class="plot-div" id="mainChart"></div>
   </div>
+
+  <div class="metrics-panel" id="metricsPanel">
+    <div class="metric-card">
+      <div class="name tooltip-wrap">累计回报
+        <span class="help-icon">?</span>
+        <div class="tooltip"><h4>累计回报 (Cumulative Return)</h4>策略在整个回测期间的总收益率，衡量"总共赚了多少"。<div class="formula">(最终资产 - 初始资金) / 初始资金</div><div class="tip-text">> 0% 盈利；< 0% 亏损。不分时间长短，跨周期对比请看年化收益。</div></div>
+      </div>
+      <div class="value neu" id="mCumReturn">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="name tooltip-wrap">年化收益
+        <span class="help-icon">?</span>
+        <div class="tooltip"><h4>年化收益率 (Annualized Return)</h4>把总收益率折算成"平均每年赚多少"，消除回测周期不同带来的不可比性。<div class="formula">(1 + R)^(252 / T) - 1</div><div class="tip-text">R = 累计回报；T = 回测交易日数；252 = A股年交易日</div></div>
+      </div>
+      <div class="value neu" id="mAnnual">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="name tooltip-wrap">最大回撤 MDD
+        <span class="help-icon">?</span>
+        <div class="tooltip"><h4>最大回撤 (Maximum Drawdown)</h4>策略在回测期间经历的最大连续亏损幅度，衡量"最坏情况下会亏多少"。<div class="formula">max( (峰值 - 谷值) / 峰值 )</div><div class="guide">< 10% 低风险 | 10%-20% 中等 | 20%-30% 高风险 | > 30% 极高</div><div class="tip-text">这不是一次交易亏损，而是资产曲线从最高点到最低点的总跌幅。</div></div>
+      </div>
+      <div class="value neg" id="mMDD">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="name tooltip-wrap">夏普比率
+        <span class="help-icon">?</span>
+        <div class="tooltip"><h4>夏普比率 (Sharpe Ratio)</h4>衡量"每承担一单位风险，能换来多少超额收益"。<div class="formula">(年化收益 - 无风险利率) / 年化波动率</div><div class="guide">< 0 跑输无风险 | 0-1 一般 | 1-2 良好 | > 2 优秀</div><div class="tip-text">无风险利率默认 2.5%（参考中国10年期国债）。高夏普代表风险调整后收益优秀。</div></div>
+      </div>
+      <div class="value info" id="mSharpe">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="name tooltip-wrap">胜率
+        <span class="help-icon">?</span>
+        <div class="tooltip"><h4>胜率 (Win Rate)</h4>盈利交易次数占总交易次数的比例，衡量"下单有多准"。<div class="formula">盈利交易 / 总交易次数</div><div class="tip-text">高胜率不等于高收益。胜率需结合盈亏比综合评估。</div></div>
+      </div>
+      <div class="value neu" id="mWinRate">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="name tooltip-wrap">总交易次数
+        <span class="help-icon">?</span>
+        <div class="tooltip"><h4>总交易次数</h4>回测期间完成的完整买卖配对数量。<div class="tip-text">一次完整交易 = 买入 + 卖出。同向信号被忽略。交易过于频繁时手续费会显著侵蚀利润。</div></div>
+      </div>
+      <div class="value neu" id="mTrades">--</div>
+    </div>
+  </div>
 </main>
-
-</div>
-
-<!-- ===== Metrics Panel ===== -->
-<div class="metrics-panel" id="metricsPanel">
-  <div class="metric-card">
-    <div class="name tooltip-wrap">累计回报
-      <span class="help-icon">?</span>
-      <div class="tooltip"><h4>累计回报 (Cumulative Return)</h4>策略在整个回测期间的总收益率，衡量"总共赚了多少"。<div class="formula">(最终资产 - 初始资金) / 初始资金</div><div class="tip-text">> 0% 盈利；< 0% 亏损。不分时间长短，跨周期对比请看年化收益。</div></div>
-    </div>
-    <div class="value neu" id="mCumReturn">--</div>
-  </div>
-  <div class="metric-card">
-    <div class="name tooltip-wrap">年化收益
-      <span class="help-icon">?</span>
-      <div class="tooltip"><h4>年化收益率 (Annualized Return)</h4>把总收益率折算成"平均每年赚多少"，消除回测周期不同带来的不可比性。<div class="formula">(1 + R)^(252 / T) - 1</div><div class="tip-text">R = 累计回报；T = 回测交易日数；252 = A股年交易日</div></div>
-    </div>
-    <div class="value neu" id="mAnnual">--</div>
-  </div>
-  <div class="metric-card">
-    <div class="name tooltip-wrap">最大回撤 MDD
-      <span class="help-icon">?</span>
       <div class="tooltip"><h4>最大回撤 (Maximum Drawdown)</h4>策略在回测期间经历的最大连续亏损幅度，衡量"最坏情况下会亏多少"。<div class="formula">max( (峰值 - 谷值) / 峰值 )</div><div class="guide">&lt; 10% 低风险 | 10%-20% 中等 | 20%-30% 高风险 | &gt; 30% 极高</div><div class="tip-text">这不是一次交易亏损，而是资产曲线从最高点到最低点的总跌幅。</div></div>
     </div>
     <div class="value neg" id="mMDD">--</div>
