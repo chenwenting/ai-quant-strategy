@@ -845,11 +845,11 @@ function drawChart() {
     if (signals[i] === 1) {
       buyIdx.push(dates[i]);
       buyY.push(shortMA[i] || prices[i]);
-      buyText.push(`BUY<br>日期: ${dates[i]}<br>价格: ${prices[i].toFixed(2)}`);
+      buyText.push(`<b>金叉买入</b><br>日期: ${dates[i]}<br>价格: ¥${prices[i].toFixed(2)}<br>短均线上穿长均线`);
     } else if (signals[i] === -1) {
       sellIdx.push(dates[i]);
       sellY.push(shortMA[i] || prices[i]);
-      sellText.push(`SELL<br>日期: ${dates[i]}<br>价格: ${prices[i].toFixed(2)}`);
+      sellText.push(`<b>死叉卖出</b><br>日期: ${dates[i]}<br>价格: ¥${prices[i].toFixed(2)}<br>短均线下穿长均线`);
     }
   }
 
@@ -860,15 +860,15 @@ function drawChart() {
       line: { color: '#3498db', width: 2 }, hovertemplate: 'MA-短: %{y:.2f}<extra></extra>' },
     { x: dates, y: longMA, type: 'scatter', mode: 'lines', name: `MA-${longPeriod}`,
       line: { color: '#f39c12', width: 2 }, hovertemplate: 'MA-长: %{y:.2f}<extra></extra>' },
-    { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers+text', name: '买入',
-      marker: { symbol: 'triangle-up', size: 14, color: '#e74c3c', line: { width: 1, color: '#c0392b' } },
-      text: buyIdx.length ? new Array(buyIdx.length).fill('买') : [], textposition: 'top center',
-      textfont: { size: 11, color: '#e74c3c', family: 'Microsoft YaHei' },
+    { x: buyIdx, y: buyY, type: 'scatter', mode: 'markers+text', name: '金叉买入',
+      marker: { symbol: 'triangle-up', size: 16, color: '#e74c3c', line: { width: 1.5, color: '#c0392b' } },
+      text: buyIdx.length ? new Array(buyIdx.length).fill('金叉买入') : [], textposition: 'top center',
+      textfont: { size: 10, color: '#e74c3c', family: 'Microsoft YaHei' },
       hovertemplate: '%{text}<extra></extra>', hovertext: buyText },
-    { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers+text', name: '卖出',
-      marker: { symbol: 'triangle-down', size: 14, color: '#27ae60', line: { width: 1, color: '#1e8449' } },
-      text: sellIdx.length ? new Array(sellIdx.length).fill('卖') : [], textposition: 'bottom center',
-      textfont: { size: 11, color: '#27ae60', family: 'Microsoft YaHei' },
+    { x: sellIdx, y: sellY, type: 'scatter', mode: 'markers+text', name: '死叉卖出',
+      marker: { symbol: 'triangle-down', size: 16, color: '#27ae60', line: { width: 1.5, color: '#1e8449' } },
+      text: sellIdx.length ? new Array(sellIdx.length).fill('死叉卖出') : [], textposition: 'bottom center',
+      textfont: { size: 10, color: '#27ae60', family: 'Microsoft YaHei' },
       hovertemplate: '%{text}<extra></extra>', hovertext: sellText }
   ];
 
